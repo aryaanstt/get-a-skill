@@ -36,7 +36,7 @@
 
 *, *::before, *::after { box-sizing: border-box }
 [hidden] { display: none !important }
-html { -webkit-text-size-adjust: 100% }
+html { -webkit-text-size-adjust: 100%; touch-action: manipulation }
 body {
   margin: 0; background: var(--bg); color: var(--ink); font: 15.5px/1.55 var(--f-teks);
   background-image: radial-gradient(var(--titik) 1.1px, transparent 1.4px); background-size: 22px 22px;
