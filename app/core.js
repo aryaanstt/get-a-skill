@@ -101,6 +101,19 @@ window.G = (() => {
     } catch (e) { if (S.sesi && S.sesi.startsWith('u:')) uid = S.sesi.slice(2) }
   })()
 
+  // Masukan dari pengguna: dikirim ke tabel `masukan` (cuma bisa ditulis, dibaca pemilik lewat dashboard Supabase).
+  const kirimMasukan = async ({ jenis, isi, bidang, kontak }) => {
+    const baris = { jenis, isi: String(isi).trim().slice(0, 2000), bidang: bidang ? String(bidang).trim().slice(0, 120) : null, kontak: kontak ? String(kontak).trim().slice(0, 120) : null, halaman: (location.hash || '#').slice(0, 120) }
+    if (baris.isi.length < 3) throw new Error('Tulis masukannya dulu ya, minimal beberapa kata.')
+    if (!sb) {
+      S.masukanTertunda = (S.masukanTertunda || []).concat([{ ...baris, tgl: tgl() }]).slice(-20); simpanLokal()
+      return { lokal: true }
+    }
+    const { error } = await sb.from('masukan').insert(baris)
+    if (error) throw new Error(/fetch|network/i.test(error.message) ? 'Koneksi bermasalah. Coba lagi bentar.' : 'Masukan gagal dikirim: ' + error.message)
+    return {}
+  }
+
   const cekIsian = (email, pass) => {
     if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)) throw new Error('Format email belum bener')
     if (String(pass).length < 6) throw new Error('Kata sandi minimal 6 karakter')
@@ -333,7 +346,7 @@ window.G = (() => {
 
   return {
     KAT, LV, S: () => S, simpan, esc, acak, tgl, geser, tglPanjang, BULAN, HARI, angka, reduksi,
-    akun, siap, D, masuk, tamu, nama, hariIni, target, streak, levelXP, tambahXP, cekLencana,
+    akun, siap, kirimMasukan, D, masuk, tamu, nama, hariIni, target, streak, levelXP, tambahXP, cekLencana,
     kursus, levelSkill, status, progres, berikut, jalurUser, warnaSkill, skillUser,
     ikon, toast, konfeti, salin, konfirmasi, tema,
     reset() { if (S.sesi) { S.data[S.sesi] = dataBaru(); simpan() } },

@@ -16,6 +16,7 @@
     hal().innerHTML = `<div class="app">
       <nav class="rel" aria-label="Menu utama">${logo()}
         <div class="rel-menu">${NAV.map(([h, n, i]) => `<a href="#${h}" class="${aktif === h ? 'on' : ''}" ${aktif === h ? 'aria-current="page"' : ''}>${ikon(i, 22)}<span>${n}</span></a>`).join('')}</div>
+        <button class="rel-masukan" data-masukan="fitur">${ikon('obrol', 20)}<span>Kasih masukan</span></button>
         <div class="rel-bawah"><div class="rel-stat"><span title="Streak">${ikon('api', 16)} ${G.streak()}</span><span title="Level">${ikon('petir', 16)} Lv ${lv.lv}</span></div>
         <button class="ikon-btn tema-btn" aria-label="Ganti tema">${ikon(document.documentElement.dataset.theme === 'dark' || (!document.documentElement.dataset.theme && matchMedia('(prefers-color-scheme: dark)').matches) ? 'matahari' : 'bulan', 20)}</button></div>
       </nav>
@@ -26,6 +27,47 @@
     }
   }
   const polos = html => { document.body.className = 'polos'; hal().innerHTML = html }
+
+  // ---------- masukan ----------
+  const JENIS_MASUKAN = [['bidang', 'Bidang atau skill baru'], ['fitur', 'Ide fitur'], ['error', 'Ada yang error'], ['lainnya', 'Lainnya']]
+  const bukaMasukan = (awal = {}) => {
+    let jenis = awal.jenis || 'bidang'
+    const w = document.createElement('div')
+    w.className = 'dialog-latar'
+    w.innerHTML = `<form class="dialog masukan" role="dialog" aria-modal="true" aria-labelledby="judul-masukan" novalidate>
+      <div class="dialog-kepala"><h2 id="judul-masukan">Kasih masukan</h2><button type="button" class="ikon-btn tutup" aria-label="Tutup">${ikon('x', 20)}</button></div>
+      <p class="redup kecil">Bidang kerja atau skill yang belum ada, fitur yang kamu pengen, atau ada yang error. Semua masukan dibaca.</p>
+      <div class="seg jenis" role="radiogroup" aria-label="Jenis masukan">${JENIS_MASUKAN.map(([k, n]) => `<button type="button" role="radio" aria-checked="${k === jenis}" data-k="${k}">${n}</button>`).join('')}</div>
+      <label class="isian-bidang">Bidang atau skill apa?<input name="bidang" maxlength="120" placeholder="Misal: teknik sipil, farmasi, public speaking" value="${esc(awal.bidang || '')}"></label>
+      <label>Ceritain lebih lengkap<textarea name="isi" rows="5" maxlength="2000" placeholder="Misal: aku anak Farmasi, pengen ada materi buat tes masuk industri farmasi"></textarea></label>
+      <label>Email atau kontak <span class="redup">(opsional, kalau mau dikabarin)</span><input name="kontak" maxlength="120" autocomplete="email" value="${esc(G.masuk() && !G.tamu() ? (G.akun.email() || '').replace(/^u:.*/, '') : '')}"></label>
+      <p class="galat" hidden></p>
+      <div class="dialog-tombol"><button type="button" class="btn garis batal">Batal</button><button class="btn utama kirim">Kirim masukan</button></div>
+    </form>`
+    document.body.appendChild(w)
+    const f = w.querySelector('form'), gl = f.querySelector('.galat'), bid = f.querySelector('.isian-bidang')
+    const segar = () => { bid.hidden = jenis !== 'bidang'; f.querySelectorAll('.jenis button').forEach(b => b.setAttribute('aria-checked', b.dataset.k === jenis)) }
+    const tutup = () => { document.removeEventListener('keydown', esc1, true); w.remove() }
+    const esc1 = e => { if (e.key === 'Escape') { e.stopPropagation(); tutup() } }
+    document.addEventListener('keydown', esc1, true)
+    f.querySelectorAll('.jenis button').forEach(b => b.onclick = () => { jenis = b.dataset.k; segar() })
+    f.querySelector('.tutup').onclick = f.querySelector('.batal').onclick = tutup
+    w.onclick = e => { if (e.target === w) tutup() }
+    f.onsubmit = async e => {
+      e.preventDefault(); gl.hidden = true
+      const v = Object.fromEntries(new FormData(f))
+      const isi = (v.isi || '').trim() || (jenis === 'bidang' && v.bidang ? `Tolong tambahin: ${v.bidang}` : '')
+      const btn = f.querySelector('.kirim'); btn.disabled = true; btn.textContent = 'Ngirim…'
+      try {
+        const h = await G.kirimMasukan({ jenis, isi, bidang: jenis === 'bidang' ? v.bidang : null, kontak: v.kontak })
+        f.innerHTML = `<div class="masukan-makasih">${ikon('cek', 34)}<h2>Makasih, masukanmu udah kekirim!</h2><p class="redup">${h.lokal ? 'Lagi mode lokal, jadi masukannya kesimpen di perangkat ini dulu.' : 'Masukan yang paling banyak diminta bakal diduluin.'}</p><button type="button" class="btn utama oke">Oke</button></div>`
+        f.querySelector('.oke').onclick = tutup; f.querySelector('.oke').focus()
+      } catch (err) { gl.textContent = err.message; gl.hidden = false; btn.disabled = false; btn.textContent = 'Kirim masukan' }
+    }
+    segar()
+    setTimeout(() => (jenis === 'bidang' && !awal.bidang ? f.querySelector('[name=bidang]') : f.querySelector('textarea')).focus(), 50)
+  }
+  document.addEventListener('click', e => { const b = e.target.closest('[data-masukan]'); if (b) { e.preventDefault(); bukaMasukan({ jenis: b.dataset.masukan || 'fitur', bidang: b.dataset.bidang || (b.dataset.cari ? filter.q : '') }) } })
 
   // ---------- landing ----------
   const landing = () => {
@@ -118,7 +160,11 @@
         el.querySelectorAll('[data-b]').forEach(b => b.onclick = () => { ob.lulusBulan = ob.lulusBulan === Number(b.dataset.b) ? null : Number(b.dataset.b); el.querySelectorAll('[data-b]').forEach(x => x.classList.toggle('on', Number(x.dataset.b) === ob.lulusBulan)) })
       } },
       { tanya: 'Jurusanmu masuk rumpun apa?', sah: () => !!ob.rumpun, isi: () => `<div class="ubin-grid kecil">${O.rumpun.map(r => `<button class="ubin ${ob.rumpun === r ? 'on' : ''}" data-v="${esc(r)}"><b>${r}</b></button>`).join('')}</div>`, pasang: el => pilihSatu(el, v => { ob.rumpun = v; setTimeout(maju, 220) }) },
-      { tanya: 'Kerja di bidang apa yang kamu incar?', sub: 'Pilih maksimal 2. Bisa diganti kapan aja.', sah: () => ob.jalur.length > 0, isi: () => `<div class="ubin-grid jalur">${KAT.jalur.map(j => `<button class="ubin garis-kiri ${ob.jalur.includes(j.id) && !ob.belumTahu ? 'on' : ''}" data-j="${j.id}" style="--garis:${j.warna}"><b>${j.nama}</b><span>${j.ket}</span></button>`).join('')}<button class="ubin putus ${ob.belumTahu ? 'on' : ''}" data-j="?"><b>Belum tahu</b><span>Kasih saran dari jurusanku</span></button></div>`, pasang: el => {
+      { tanya: 'Kerja di bidang apa yang kamu incar?', sub: 'Pilih maksimal 2. Bisa diganti kapan aja.', sah: () => ob.jalur.length > 0, isi: () => `<div class="ubin-grid jalur">${KAT.jalur.map(j => `<button class="ubin garis-kiri ${ob.jalur.includes(j.id) && !ob.belumTahu ? 'on' : ''}" data-j="${j.id}" style="--garis:${j.warna}"><b>${j.nama}</b><span>${j.ket}</span></button>`).join('')}<button class="ubin putus ${ob.belumTahu ? 'on' : ''}" data-j="?"><b>Belum tahu</b><span>Kasih saran dari jurusanku</span></button></div>
+          <div class="ga-ada"><button class="link-tombol" data-ga-ada aria-expanded="${!!ob.bidangLain}">${ikon('tambah', 16)} Bidang yang kamu incar ga ada di sini?</button><div class="ga-ada-isi" ${ob.bidangLain ? '' : 'hidden'}><input class="ob-input kecil" maxlength="120" placeholder="Misal: hospitality, farmasi, teknik sipil" value="${esc(ob.bidangLain || '')}" aria-label="Bidang yang kamu incar"><p class="redup kecil">Ini jadi masukan buat nambah jalur baru. Sementara, pilih juga satu jalur di atas yang paling deket.</p></div></div>`, pasang: el => {
+        const ga = el.querySelector('[data-ga-ada]'), gaIsi = el.querySelector('.ga-ada-isi'), gaInp = gaIsi.querySelector('input')
+        ga.onclick = () => { gaIsi.hidden = !gaIsi.hidden; ga.setAttribute('aria-expanded', !gaIsi.hidden); if (!gaIsi.hidden) gaInp.focus() }
+        gaInp.oninput = () => { ob.bidangLain = gaInp.value.trim() }
         el.querySelectorAll('[data-j]').forEach(b => b.onclick = () => {
           const j = b.dataset.j
           if (j === '?') { ob.belumTahu = !ob.belumTahu; ob.jalur = ob.belumTahu ? (O.saranJalur[ob.rumpun] || ['data', 'admin']).slice() : [] }
@@ -153,6 +199,10 @@
     const maju = () => { if (!LANGKAH[i].sah()) return; if (i < LANGKAH.length - 1) { i++; gambar() } else simpanOb() }
     const simpanOb = () => {
       ob.nama = ob.nama.trim()
+      if (ob.bidangLain && ob.bidangLain !== ob.bidangLainTerkirim) {
+        const b = ob.bidangLain
+        G.kirimMasukan({ jenis: 'bidang', isi: `Bidang yang dicari pas onboarding: ${b}. Rumpun: ${ob.rumpun || '-'}. Status: ${ob.status || '-'}.`, bidang: b }).then(() => { ob.bidangLainTerkirim = b; G.simpan() }).catch(() => { })
+      }
       d.onboarding = ob
       Object.entries(ob.cek).forEach(([s, v]) => { if (!d.level[s] || d.level[s].sumber !== 'tes') d.level[s] = { level: v === 2 ? 'menengah' : 'dasar', sumber: 'perkiraan', tgl: G.tgl() } })
       G.simpan()
@@ -256,7 +306,8 @@
       <div class="cari">${ikon('cari', 18)}<input type="search" placeholder="Cari skill, misal SQL, interview, akuntansi" value="${esc(filter.q)}" aria-label="Cari skill"></div>
       <div class="chip-baris">${kats.map(k => `<button class="chip ${filter.kat === k ? 'on' : ''}" data-kat="${k}">${k}</button>`).join('')}</div>
       <div class="chip-baris garis">${KAT.jalur.map(j => `<button class="chip jl ${filter.jalur === j.id ? 'on' : ''}" data-j="${j.id}" style="--garis:${j.warna}"><i></i>${j.nama}</button>`).join('')}</div>
-      <div class="skill-grid"></div></div>`)
+      <div class="skill-grid"></div>
+      <section class="panel ajak-masukan">${ikon('lampu', 22)}<div><b>Skill atau bidang yang kamu butuhin belum ada?</b><span class="redup kecil">Usulin aja. Yang paling banyak diminta bakal ditambahin duluan.</span></div><button class="btn utama" data-masukan="bidang" data-cari="1">Usulin skill</button></section></div>`)
     const grid = hal().querySelector('.skill-grid')
     const gambar = () => {
       const q = filter.q.toLowerCase().trim()
@@ -360,6 +411,7 @@
       <div class="statistik besar"><div><small>Total XP</small><b>${G.angka(d.xp)}</b></div><div><small>Level</small><b>${lv.lv}</b></div><div><small>Streak</small><b>${G.streak()}</b></div><div><small>Pelajaran</small><b>${Object.keys(d.pelajaran).length}</b></div><div><small>Tes</small><b>${Object.keys(d.tes).length}</b></div></div>
       <section><h2 class="judul-bagian">Tiket lulus</h2>${tiketLulus.length ? `<div class="tiket-grid">${tiketLulus.map(t => `<div class="tiket lulus" style="--garis:${G.warnaSkill(t.id)}"><div class="tiket-kiri">${kode(t.id, true)}</div><div class="tiket-isi"><span class="label-kecil">Tiket lulus · ${levelNama(t.l)}</span><h3>${KAT.skill[t.id].nama}</h3><p class="redup kecil">${t.tg ? G.tglPanjang(t.tg) : ''}</p></div></div>`).join('')}</div><p class="redup kecil">Tiket muncul tiap kamu beresin satu level. Ini catatan progres pribadi di aplikasi ini, bukan sertifikat resmi, jadi jangan dicantumin di CV sebagai sertifikasi.</p>` : '<p class="redup">Beresin semua pelajaran di satu level buat dapet tiket lulus pertama.</p>'}</section>
       <section><h2 class="judul-bagian">Lencana</h2><div class="lencana-grid">${KAT.lencana.map(l => `<div class="lencana ${d.lencana[l.id] ? 'dapat' : ''}">${ikon('medali', 26)}<b>${l.nama}</b><span class="redup kecil">${d.lencana[l.id] ? 'Didapat ' + G.tglPanjang(d.lencana[l.id]) : l.ket}</span></div>`).join('')}</div></section>
+      <section class="panel ajak-masukan">${ikon('obrol', 22)}<div><b>Punya ide atau nemu yang error?</b><span class="redup kecil">Bidang baru, fitur, atau bug. Semua masukan dibaca.</span></div><button class="btn utama" data-masukan="fitur">Kasih masukan</button></section>
       <section class="panel pengaturan"><h2>Pengaturan</h2>
         <div class="atur"><span>Tema</span><div class="seg" role="radiogroup">${[['light', 'Terang'], ['dark', 'Gelap'], ['sistem', 'Ikut sistem']].map(([v, n]) => `<button role="radio" aria-checked="${G.tema() === v}" data-tema="${v}">${n}</button>`).join('')}</div></div>
         <div class="atur"><span>Target harian</span><div class="seg" role="radiogroup">${KAT.onboarding.target.map(t => `<button role="radio" aria-checked="${ob.target === t.id}" data-tgt="${t.id}">${t.label}</button>`).join('')}</div></div>
@@ -378,6 +430,7 @@
     const [r, a, b] = location.hash.replace(/^#\/?/, '').split(/[\/-]/)
     window.scrollTo(0, 0)
     if (window.GAS_IELTS) GAS_IELTS.henti()
+    document.querySelectorAll('.dialog-latar').forEach(x => x.remove())
     if (r === 'masuk' || r === 'daftar') { if (G.masuk() && !G.tamu()) return go('#beranda'); return auth(r) }
     if (!G.masuk()) return landing()
     if (!G.D().onboarding && r !== 'mulai') return go('#mulai')

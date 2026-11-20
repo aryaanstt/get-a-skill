@@ -111,6 +111,57 @@ window.GAS_KURSUS = window.GAS_KURSUS || {}
     ],
   }
 
+  window.GAS_KURSUS.K3 = {
+    tes: [
+      { level: 'dasar', tanya: 'Kepanjangan K3?', opsi: ['Keselamatan dan Kesehatan Kerja', 'Keamanan, Ketertiban, Kebersihan', 'Kualitas, Kinerja, Keuntungan', 'Kontrol Kerja Karyawan'], benar: 0 },
+      { level: 'dasar', tanya: 'Dalam hierarki pengendalian risiko, cara yang PALING efektif adalah…', opsi: ['Eliminasi (hilangin bahayanya)', 'Pakai APD', 'Pasang rambu peringatan', 'Training karyawan'], benar: 0 },
+      { level: 'menengah', tanya: 'Kejadian yang hampir bikin celaka tapi ga ada korban disebut…', opsi: ['Near miss', 'Fatality', 'Lost time injury', 'First aid case'], benar: 0 },
+      { level: 'menengah', tanya: 'Tingkat risiko biasanya dihitung dari…', opsi: ['Kemungkinan × keparahan', 'Jumlah pekerja × jam kerja', 'Biaya × waktu', 'Jumlah APD × harga'], benar: 0 },
+    ],
+    pelajaran: [
+      { id: 'bahaya', level: 'dasar', judul: 'Bahaya, risiko, dan APD', menit: 6, langkah: [
+        { t: 'info', judul: 'Bahaya ≠ risiko', isi: '<p><b>Bahaya (hazard)</b>: sesuatu yang bisa bikin celaka, misal lantai licin, mesin berputar, bahan kimia.</p><p><b>Risiko</b>: seberapa mungkin bahaya itu bikin celaka dan seberapa parah akibatnya. Lantai licin di gudang kosong risikonya beda dengan lantai licin di jalur forklift.</p><p>Di Indonesia, dasarnya UU No. 1 Tahun 1970 tentang Keselamatan Kerja, dan sistem manajemennya diatur PP No. 50 Tahun 2012 (SMK3).</p>' },
+        { t: 'pasang', tanya: 'Pasangin bahaya dengan jenisnya.', pasangan: [['Kebisingan mesin', 'Fisika'], ['Uap pelarut cat', 'Kimia'], ['Angkat karung 50 kg berulang', 'Ergonomi'], ['Jamur di ruang lembap', 'Biologi']] },
+        { t: 'pasang', tanya: 'Pasangin pekerjaan dengan APD yang paling pas.', pasangan: [['Kerja di dekat mesin bising', 'Earplug / earmuff'], ['Gerinda logam', 'Kacamata pelindung'], ['Kerja di ketinggian 3 m', 'Full body harness'], ['Area proyek konstruksi', 'Helm safety']] },
+        { t: 'pilih', tanya: 'Kenapa APD ada di urutan TERAKHIR hierarki pengendalian?', opsi: ['Karena cuma ngelindungin pemakainya dan bahayanya tetap ada', 'Karena paling mahal', 'Karena ga wajib', 'Karena susah dibeli'], benar: 0, jelas: 'APD itu benteng terakhir. Kalau bahayanya bisa dihilangin atau dikurangin dari sumbernya, itu lebih efektif.' },
+      ] },
+      { id: 'hirarc', level: 'dasar', judul: 'Hierarki pengendalian dan penilaian risiko', menit: 7, langkah: [
+        { t: 'urut', tanya: 'Susun hierarki pengendalian risiko dari yang PALING efektif.', item: ['Eliminasi: hilangin sumber bahaya', 'Substitusi: ganti dengan yang lebih aman', 'Rekayasa teknik: pagar mesin, ventilasi', 'Administrasi: SOP, rambu, jadwal rotasi', 'APD: helm, sarung tangan, masker'] },
+        { t: 'pasang', tanya: 'Tindakan ini masuk level pengendalian mana?', pasangan: [['Ganti cat berbasis pelarut dengan cat berbasis air', 'Substitusi'], ['Pasang pelindung di sabuk konveyor', 'Rekayasa teknik'], ['Bikin izin kerja sebelum masuk ruang terbatas', 'Administrasi'], ['Pindahin proses las ke luar gedung, ga dikerjain di area itu lagi', 'Eliminasi']] },
+        { t: 'info', judul: 'Matriks risiko', isi: '<p>Banyak perusahaan pakai <b>HIRARC</b>: Hazard Identification, Risk Assessment, Risk Control.</p><p>Risiko = <b>kemungkinan</b> (1 sampai 5) × <b>keparahan</b> (1 sampai 5). Skor makin tinggi, makin diprioritasin.</p>' },
+        { t: 'angka', tanya: 'Kemungkinan terjadi 4, keparahan 5. Skor risikonya?', benar: 20, jelas: '4 × 5 = 20. Di matriks 5×5 ini masuk kategori risiko tinggi.' },
+        { t: 'skenario', tanya: 'Kamu liat rekan kerja naik tangga tanpa pegangan buat ambil barang di rak tinggi.', opsi: [
+          { teks: 'Tegur sopan, minta turun, ambilin tangga yang aman, terus laporin sebagai near miss', skor: 2, ket: 'Hentikan bahayanya dulu, terus laporin biar penyebabnya dibenerin.' },
+          { teks: 'Diem aja, bukan urusanku', skor: 0, ket: 'Di budaya K3, semua orang boleh dan wajib ngingetin kondisi ga aman.' },
+          { teks: 'Langsung lapor ke atasan tanpa negur', skor: 1, ket: 'Lapor itu bagus, tapi bahayanya masih jalan. Hentikan dulu kalau aman.' },
+        ] },
+      ] },
+    ],
+  }
+
+  window.GAS_KURSUS.QC = {
+    tes: [
+      { level: 'dasar', tanya: 'Kepanjangan PDCA?', opsi: ['Plan, Do, Check, Act', 'Produce, Deliver, Control, Audit', 'Plan, Design, Count, Approve', 'Process, Data, Check, Adjust'], benar: 0 },
+      { level: 'dasar', tanya: 'Diagram buat nyari akar masalah berdasarkan kategori (manusia, mesin, metode, material) disebut…', opsi: ['Diagram tulang ikan (fishbone)', 'Diagram Pareto', 'Histogram', 'Gantt chart'], benar: 0 },
+      { level: 'menengah', tanya: 'Prinsip Pareto di quality control artinya…', opsi: ['Sebagian kecil penyebab bikin sebagian besar masalah', 'Semua penyebab sama penting', 'Masalah selalu dari mesin', 'Cacat harus 0%'], benar: 0 },
+      { level: 'menengah', tanya: 'Data cacat 30 dari 1.500 produk. Persentase cacatnya?', opsi: ['2%', '3%', '0,5%', '5%'], benar: 0 },
+    ],
+    pelajaran: [
+      { id: 'pdca', level: 'dasar', judul: 'PDCA dan 7 alat QC', menit: 7, langkah: [
+        { t: 'info', judul: 'Perbaikan itu siklus', isi: '<p><b>Plan</b>: tentuin masalah dan rencana. <b>Do</b>: coba skala kecil. <b>Check</b>: ukur hasilnya. <b>Act</b>: kalau berhasil jadiin standar, kalau belum ulang lagi.</p><p>Alatnya dikenal sebagai <b>7 alat QC</b>: check sheet, histogram, diagram Pareto, diagram tulang ikan, scatter diagram, control chart, dan stratifikasi.</p>' },
+        { t: 'urut', tanya: 'Susun langkah PDCA buat ngurangin produk penyok.', item: ['Plan: catat jenis penyok dan targetin turun 50%', 'Do: coba ganti bantalan di satu lini dulu', 'Check: bandingin data penyok sebelum dan sesudah', 'Act: kalau turun, pasang bantalan baru di semua lini'] },
+        { t: 'pasang', tanya: 'Pasangin kebutuhan dengan alat QC-nya.', pasangan: [['Nyatet jumlah cacat per jenis tiap shift', 'Check sheet'], ['Nyari penyebab utama dari banyak jenis cacat', 'Diagram Pareto'], ['Nelusurin akar masalah per kategori', 'Diagram tulang ikan'], ['Mantau proses masih dalam batas normal atau nggak', 'Control chart']] },
+        { t: 'angka', tanya: 'Cacat 45 dari 1.800 produk. Berapa persen cacatnya?', benar: 2.5, toleransi: 0.01, satuan: '%', jelas: '45 ÷ 1.800 = 0,025 = 2,5%' },
+      ] },
+      { id: 'akar', level: 'dasar', judul: '5 Why, Pareto, dan 5S', menit: 7, langkah: [
+        { t: 'info', judul: 'Jangan berhenti di gejala', isi: '<p><b>5 Why</b>: tanya "kenapa" berulang sampai ketemu akar masalah, biasanya sekitar 5 kali.</p><p><b>5S</b> buat area kerja rapi: <b>Seiri</b> (pilah), <b>Seiton</b> (tata), <b>Seiso</b> (bersihin), <b>Seiketsu</b> (standarkan), <b>Shitsuke</b> (biasakan). Versi Indonesianya sering disebut 5R: Ringkas, Rapi, Resik, Rawat, Rajin.</p>' },
+        { t: 'urut', tanya: 'Susun rantai 5 Why ini dari gejala ke akar masalah.', item: ['Mesin berhenti mendadak', 'Karena sekringnya putus kelebihan beban', 'Karena bearing-nya macet', 'Karena pelumasnya kurang', 'Karena ga ada jadwal pelumasan rutin'], jelas: 'Akar masalahnya sistem (jadwal perawatan), bukan sekringnya. Ganti sekring doang bikin masalahnya balik lagi.' },
+        { t: 'pasang', tanya: 'Pasangin istilah 5S dengan artinya.', pasangan: [['Seiri', 'Pisahin yang perlu dan ga perlu'], ['Seiton', 'Tiap barang punya tempat tetap'], ['Seiso', 'Bersihin sambil ngecek kondisi'], ['Shitsuke', 'Jadiin kebiasaan']] },
+        { t: 'pilih', tanya: 'Data cacat: goresan 120, penyok 45, warna belang 20, lainnya 15. Kalau mau dampak terbesar, fokus ke…', opsi: ['Goresan dulu, karena 60% dari total cacat', 'Semua sekaligus', 'Lainnya dulu biar cepat beres', 'Warna belang dulu'], benar: 0, jelas: '120 dari 200 = 60%. Inilah prinsip Pareto: beresin penyebab terbesar dulu.' },
+      ] },
+    ],
+  }
+
   window.GAS_KURSUS.AD = {
     tes: [
       { level: 'dasar', tanya: 'Bagian "Hal/Perihal" di surat resmi isinya…', opsi: ['Inti atau topik surat', 'Nama pengirim', 'Tanggal', 'Jumlah lampiran'], benar: 0 },

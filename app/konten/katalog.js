@@ -14,6 +14,7 @@ window.GAS_KATALOG = {
     { id: 'admin', nama: 'Admin & Operasional', warna: '#5F8D3E', skill: ['AD', 'EX', 'KM', 'PM'], ket: 'Admin, operasional, sekretaris, GA' },
     { id: 'desain', nama: 'Desain & Kreatif', warna: '#D1307E', skill: ['UX', 'CW', 'KM', 'PM'], ket: 'UI/UX, desain grafis, content creator' },
     { id: 'teknologi', nama: 'Teknologi & IT', warna: '#3657F5', skill: ['EX', 'SQ', 'PY', 'PM'], ket: 'Programmer, IT support, QA' },
+    { id: 'teknik', nama: 'Teknik & Industri', warna: '#8B5E3C', skill: ['K3', 'QC', 'EX', 'PM'], ket: 'Engineer, QC/QA, produksi, HSE, plant' },
     { id: 'mt', nama: 'Management Trainee', warna: '#7B4DE0', skill: ['PS', 'EX', 'KM', 'PM', 'EN'], ket: 'MT, ODP, graduate program BUMN dan swasta' },
   ],
   // Garis wajib buat semua orang: persiapan ngelamar.
@@ -29,6 +30,8 @@ window.GAS_KATALOG = {
     CW: { pendek: 'Copywriting', nama: 'Copywriting', kategori: 'Hard skill', ringkas: 'Nulis caption, headline, dan pesan yang bikin orang bertindak.', kenapa: 'Dipakai di marketing, sales, HR, sampai bikin CV kamu sendiri.' },
     AK: { pendek: 'Akuntansi', nama: 'Akuntansi Dasar', kategori: 'Hard skill', ringkas: 'Persamaan akuntansi, debit kredit, jurnal, dan laporan keuangan.', kenapa: 'Bahasa bisnis. Berguna di finance, admin, bahkan buat buka usaha.' },
     UX: { pendek: 'UI/UX', nama: 'Desain UI/UX', kategori: 'Hard skill', ringkas: 'Prinsip desain, design thinking, dan cara mikir pakai sudut pandang pengguna.', kenapa: 'Skill kreatif yang dicari startup dan perusahaan digital.' },
+    K3: { pendek: 'K3 & HSE', nama: 'K3 (Keselamatan & Kesehatan Kerja)', kategori: 'Hard skill', ringkas: 'Bahaya kerja, penilaian risiko, hierarki pengendalian, dan APD.', kenapa: 'Wajib di pabrik, tambang, konstruksi, dan migas. Sering ditanya di interview posisi teknik dan plant.' },
+    QC: { pendek: 'Quality Control', nama: 'Quality Control & Perbaikan Proses', kategori: 'Hard skill', ringkas: 'PDCA, 7 alat QC, diagram Pareto dan tulang ikan, 5S, dan 5 Why.', kenapa: 'Bahasa sehari-hari di industri manufaktur. Dicari buat posisi QC, QA, produksi, dan engineer.' },
     PM: { pendek: 'Manajemen Proyek', nama: 'Project Management', kategori: 'Soft skill', ringkas: 'Tujuan SMART, timeline, prioritas, dan Agile Scrum.', kenapa: 'Kerjaan apa pun pasti ada tenggat. Yang bisa ngatur proyek cepat dipercaya.' },
     AD: { pendek: 'Administrasi', nama: 'Administrasi Perkantoran', kategori: 'Hard skill', ringkas: 'Surat resmi, arsip, email kantor, dan notulen rapat.', kenapa: 'Pintu masuk paling banyak buat fresh graduate semua jurusan.' },
     KM: { pendek: 'Komunikasi', nama: 'Komunikasi & Presentasi', kategori: 'Soft skill', ringkas: 'Nyusun presentasi, ngomong jelas, dan ngadepin situasi kerja.', kenapa: 'Dinilai di interview, FGD, dan tiap hari pas kerja.' },
@@ -48,7 +51,7 @@ window.GAS_KATALOG = {
     rumpun: ['Teknik', 'Sains & MIPA', 'Ekonomi & Bisnis', 'Sosial & Humaniora', 'Komputer & IT', 'Kesehatan', 'Seni & Desain', 'Pendidikan', 'Hukum', 'Pertanian & Lingkungan'],
     // Kalau belum tau mau ke mana: saran jalur dari rumpun jurusan.
     saranJalur: {
-      'Teknik': ['mt', 'data'], 'Sains & MIPA': ['data', 'mt'], 'Ekonomi & Bisnis': ['keuangan', 'marketing'], 'Sosial & Humaniora': ['marketing', 'admin'],
+      'Teknik': ['teknik', 'mt'], 'Sains & MIPA': ['data', 'mt'], 'Ekonomi & Bisnis': ['keuangan', 'marketing'], 'Sosial & Humaniora': ['marketing', 'admin'],
       'Komputer & IT': ['teknologi', 'data'], 'Kesehatan': ['admin', 'mt'], 'Seni & Desain': ['desain', 'marketing'], 'Pendidikan': ['admin', 'marketing'],
       'Hukum': ['admin', 'mt'], 'Pertanian & Lingkungan': ['mt', 'data'],
     },
