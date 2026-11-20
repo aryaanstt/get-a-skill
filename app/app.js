@@ -83,7 +83,6 @@
         <p class="tengah kecil">${daftar ? 'Udah punya akun? <a href="#masuk">Masuk</a>' : 'Belum punya akun? <a href="#daftar">Daftar</a>'}</p>
         <div class="atau"><span>atau</span></div>
         <button class="btn garis penuh tamu">Lanjut tanpa akun</button>
-        <p class="catatan">${ikon('gembok', 14)} ${G.akun.awan() ? 'Akun dan progres disimpan di server (Supabase), jadi satu akun bisa dipakai di HP dan laptop. Kata sandi disimpan dalam bentuk terenkripsi.' : 'Mode lokal: akun cuma kesimpen di browser ini. Buka situs aslinya buat akun yang nyambung antarperangkat.'}</p>
       </div>
       <div class="auth-hias" aria-hidden="true"><div id="peta-auth"></div></div>
     </div>`)

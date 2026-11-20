@@ -83,7 +83,7 @@ window.G = (() => {
   }
   const pesan = e => {
     const m = (e && e.message) || String(e)
-    if (/invalid login/i.test(m)) return 'Email atau kata sandi salah'
+    if (/invalid login/i.test(m)) return 'Email atau kata sandi salah. Akun dari versi lama ga ikut pindah, jadi kalau belum daftar ulang, pencet Daftar dulu.'
     if (/already (registered|exists)/i.test(m)) return 'Email ini udah terdaftar. Coba masuk.'
     if (/not confirmed/i.test(m)) return 'Email belum dikonfirmasi. Buka email dari Supabase (cek juga folder spam), klik link-nya, terus masuk lagi.'
     if (/rate limit|too many|security purposes/i.test(m)) return 'Lagi kebanyakan percobaan. Tunggu sebentar, terus coba lagi.'
