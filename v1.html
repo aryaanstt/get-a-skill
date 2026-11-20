@@ -1,0 +1,56 @@
+<!doctype html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Get a Skill</title>
+<meta name="description" content="Kursus interaktif SQL, Excel, Power BI, Statistik, Python, dan mock test IELTS. Dari pemula sampai ahli, latihan dicek otomatis.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="aset/gaya.css">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><text y='26' font-size='26'>🎯</text></svg>">
+</head>
+<body>
+<main class="wrap" id="isi"></main>
+<footer><div class="wrap">Get a Skill · progres disimpan di browser lu sendiri. Dibikin buat belajar tanpa ketergantungan AI: kerjain dulu, baru minta dicek.</div></footer>
+<script src="aset/inti.js"></script>
+<script src="data/sql.js"></script>
+<script src="data/lain.js"></script>
+<script>
+(() => {
+  GAS.header('Beranda')
+  const K = window.KURSUS
+  const jumlah = k => K[k].level.flatMap(l => l.pelajaran).reduce((n, p) => n + p.langkah.filter(s => s.t !== 'teks').length, 0)
+  const lv = GAS.level(GAS.data.xp)
+  const persenLv = lv.ke > lv.dari ? Math.round(((GAS.data.xp - lv.dari) / (lv.ke - lv.dari)) * 100) : 100
+  const urut = [
+    ['sql', 1, 'Paling sering diminta loker data analyst. Wajib.', 'ok'],
+    ['excel', 2, 'Dipakai di hampir semua kantor, dari admin sampai analyst.', 'ok'],
+    ['powerbi', 3, 'Lebih sering muncul di loker Indonesia daripada Tableau.', ''],
+    ['ielts', 4, 'Dari B2 ke band 6.5+, buka MT dan perusahaan global.', 'violet'],
+    ['statistik', 5, 'Udah ada dasarnya dari TA, tinggal bahasa bisnisnya.', ''],
+    ['python', 6, 'Naik level dari pandas di TA.', ''],
+    ['tableau', 7, 'Opsional. Konsepnya sama kayak Power BI.', ''],
+  ]
+  const kartu = ([k, no, kenapa, warna]) => {
+    if (k === 'ielts') {
+      const h = GAS.data.ielts, b = h.find(x => x.band && x.band !== '–')
+      return `<a class="kartu kursus-kartu" href="ielts.html"><div class="baris"><span class="ikon">🇬🇧</span><span class="tag ${warna}">#${no}</span></div><h3>IELTS Mock Test + Tutor AI</h3><p class="muted" style="margin:0">${kenapa}</p><div class="baris" style="font-size:13px"><span>${h.length} sesi latihan</span><span class="spasi"></span><b>${b ? 'Band terakhir ' + b.band : 'Belum dites'}</b></div></a>`
+    }
+    const pr = GAS.progresKursus(k, jumlah(k))
+    return `<a class="kartu kursus-kartu" href="kursus.html?k=${k}"><div class="baris"><span class="ikon">${K[k].ikon}</span><span class="tag ${warna}">#${no}</span></div><h3>${K[k].nama}</h3><p class="muted" style="margin:0">${kenapa}</p><div class="bar"><i style="width:${pr.persen}%"></i></div><div class="baris" style="font-size:13px"><span>${pr.n}/${pr.total} latihan</span><span class="spasi"></span><b>${pr.persen}%</b></div></a>`
+  }
+  document.getElementById('isi').innerHTML = `
+    <div class="hero">
+      <div class="kartu sambut"><h1>Get a Skill 🎯</h1><p class="muted" style="font-size:16px">Belajar skill yang beneran dicari loker data analyst, dari pemula sampai ahli. Lu ngerjain sendiri, sistem yang ngecek. Biar pas kerja ga ketergantungan AI.</p><div class="baris"><a class="btn putih" href="kursus.html?k=sql">Lanjut belajar SQL</a><a class="btn" style="background:#ffffff22;color:#fff;border-color:#ffffff55" href="ielts.html">Mock test IELTS</a></div></div>
+      <div class="kartu"><div class="muted" style="font-size:13px">Level lu</div><div style="font-size:28px;font-weight:800">${lv.nama}</div><div class="bar" style="margin:10px 0"><i style="width:${persenLv}%"></i></div><div class="muted" style="font-size:13px">${lv.berikut ? `${lv.ke - GAS.data.xp} XP lagi ke ${lv.berikut}` : 'Level tertinggi!'}</div><div class="baris" style="margin-top:14px"><span class="pil">🔥 ${GAS.streak()} hari beruntun</span><span class="pil">⭐ ${GAS.data.xp} XP</span></div></div>
+    </div>
+    <h2>Urutan belajar yang gua saranin</h2>
+    <p class="muted">Diurutin dari yang paling ngaruh ke CV data analyst lu. Tiap kursus punya level Pemula, Menengah, Mahir, Ahli.</p>
+    <div class="grid">${urut.map(kartu).join('')}</div>
+    <h2>Cara belajar di sini</h2>
+    <div class="grid">${[['📖 Baca singkat', 'Materi pendek, langsung contoh.'], ['⌨️ Kerjain sendiri', 'Query, rumus, dan soal dicek otomatis. Petunjuk ada, jawaban baru keluar setelah beberapa kali salah.'], ['🧪 Proyek mini', 'Tiap level ditutup studi kasus kayak soal interview.'], ['🤖 AI buat ngecek', 'AI cuma dipakai buat feedback Writing dan Speaking, setelah lu jawab sendiri.']].map(([a, b]) => `<div class="kartu"><h3>${a}</h3><p class="muted" style="margin:0">${b}</p></div>`).join('')}</div>`
+})()
+</script>
+</body>
+</html>
