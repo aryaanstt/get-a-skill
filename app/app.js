@@ -5,7 +5,7 @@
   const go = h => { if (location.hash === h) render(); else location.hash = h }
   const sapa = () => { const j = new Date().getHours(); return j < 11 ? 'Selamat pagi' : j < 15 ? 'Selamat siang' : j < 18 ? 'Selamat sore' : 'Selamat malam' }
   const kode = (id, besar) => { const w = G.warnaSkill(id); return `<span class="kode ${besar ? 'besar' : ''} ${w === 'var(--siap)' ? 'siap' : ''}" style="background:${w}">${id}</span>` }
-  const logo = () => `<a class="logo" href="#" aria-label="Get a Skill, beranda"><svg viewBox="0 0 32 32" width="28" height="28" aria-hidden="true"><path d="M4 22h8l8-12h8" fill="none" stroke="#0E9F9A" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/><path d="M4 10h8l8 12h8" fill="none" stroke="#F2542D" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/><rect x="12.5" y="12" width="7" height="8" rx="3.5" fill="var(--panel)" stroke="var(--ink)" stroke-width="2.2"/></svg><span>get a skill</span></a>`
+  const logo = () => `<a class="logo" href="#" aria-label="get a skill, beranda"><span class="wm-get" aria-hidden="true"><span class="kap">get</span> <span class="aks">a</span> skill<span class="aks">.</span></span></a>`
   const levelNama = id => (KAT.level.find(l => l.id === id) || {}).nama
 
   // ---------- kerangka aplikasi ----------
@@ -101,7 +101,7 @@
         <h2>Pilih jalurmu</h2><p class="redup">Semua jalur nyambung ke garis <b>Siap Kerja</b>: CV, psikotes, interview, dan bahasa Inggris.</p>
         <div class="jalur-grid">${KAT.jalur.map(j => `<div class="jalur-kartu" style="--garis:${j.warna}"><b>${j.nama}</b><span class="redup kecil">${j.ket}</span><div class="kode-baris">${j.skill.map(s => `<span class="kode kecil" style="background:${j.warna}">${s}</span>`).join('')}</div></div>`).join('')}</div>
       </section>
-      <footer class="lnd-kaki"><span>${logo()}</span><span class="redup kecil">${G.akun.awan() ? 'Satu akun buat semua perangkat. Progres disimpan di server.' : 'Mode lokal: akun dan progres cuma di perangkat ini.'}</span></footer>
+      <footer class="lnd-kaki"><span>${logo()} <a class="redup kecil bagian-dari" href="../../get-it/">bagian dari <b>get it</b></a></span><span class="redup kecil">${G.akun.awan() ? 'Satu akun buat semua perangkat. Progres disimpan di server.' : 'Mode lokal: akun dan progres cuma di perangkat ini.'}</span></footer>
     </div>`)
     GAS_PETA.gambar(document.getElementById('peta-hero'), { lines: contoh, kereta: !G.reduksi(), ringkas: true, legenda: true, minSkala: .62, klik: () => go('#daftar') })
     GAS_PEMUTAR.demo(document.getElementById('demo'), window.GAS_KURSUS.EX.pelajaran[0].langkah[2], () => G.konfeti())

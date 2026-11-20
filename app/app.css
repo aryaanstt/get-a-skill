@@ -10,10 +10,12 @@
   --f-judul: 'Bricolage Grotesque', 'Plus Jakarta Sans', system-ui, sans-serif;
   --f-teks: 'Plus Jakarta Sans', system-ui, -apple-system, 'Segoe UI', sans-serif;
   --f-kode: 'JetBrains Mono', ui-monospace, 'Cascadia Code', Consolas, monospace;
+  --merek: #C98200;
   color-scheme: light;
 }
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme="light"]) {
+    --merek: #FFB224;
     --bg: #0B0F17; --panel: #121826; --panel-2: #182032; --ink: #E8ECF3; --ink-2: #C7CEDA; --redup: #8E98AA;
     --garis-ui: #232C3E; --garis-kuat: #36425C; --titik: rgba(232, 236, 243, .055);
     --amber-ink: #FFD27A; --amber-bg: rgba(255, 178, 36, .13);
@@ -23,6 +25,7 @@
   }
 }
 :root[data-theme="dark"] {
+  --merek: #FFB224;
   --bg: #0B0F17; --panel: #121826; --panel-2: #182032; --ink: #E8ECF3; --ink-2: #C7CEDA; --redup: #8E98AA;
   --garis-ui: #232C3E; --garis-kuat: #36425C; --titik: rgba(232, 236, 243, .055);
   --amber-ink: #FFD27A; --amber-bg: rgba(255, 178, 36, .13);
@@ -122,7 +125,12 @@ code { font-family: var(--f-kode); font-size: .88em; background: var(--panel-2);
 
 /* ---------- logo & navigasi ---------- */
 .logo { display: inline-flex; align-items: center; gap: 9px; text-decoration: none; color: var(--ink) }
-.logo span { font: 750 20px/1 var(--f-judul); letter-spacing: -.035em }
+/* logo brand get it: "get" di kapsul garis tipis, "a" dan titik warna produk */
+.wm-get { font: 800 21px/1 var(--f-judul); letter-spacing: -.04em; white-space: nowrap; color: var(--ink) }
+.wm-get .kap { display: inline-block; border-radius: .32em; padding: .02em .17em .12em; margin-right: .02em; box-shadow: inset 0 0 0 max(1.5px, .04em) currentColor }
+.wm-get .aks { color: var(--merek) }
+.bagian-dari { margin-left: 10px; text-decoration: none }
+.bagian-dari:hover { color: var(--ink) }
 .app { display: grid; grid-template-columns: 236px minmax(0, 1fr); min-height: 100dvh }
 .rel { position: sticky; top: 0; height: 100dvh; display: flex; flex-direction: column; gap: 26px; padding: 22px 16px; border-right: 1px solid var(--garis-ui); background: color-mix(in srgb, var(--panel) 72%, transparent); backdrop-filter: blur(10px); z-index: 20 }
 .rel .logo { padding: 4px 10px }
