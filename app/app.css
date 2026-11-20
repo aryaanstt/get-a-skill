@@ -453,6 +453,92 @@ ul.saran li { margin: 4px 0 }
 .saklar input:checked + span::after { transform: translateX(18px); background: var(--bg) }
 .saklar input:focus-visible + span { outline: 2.5px solid var(--ink); outline-offset: 2px }
 
+/* ---------- mock IELTS ---------- */
+.ielts-grid { display: grid; grid-template-columns: minmax(0, 1fr) 320px; gap: 24px; align-items: start; margin-bottom: 26px }
+.ielts-grid .lat-grid { grid-template-columns: repeat(auto-fill, minmax(230px, 1fr)) }
+.ie-ringkas { display: grid; gap: 6px }
+.ie-band-besar { font: 800 64px/1 var(--f-judul); letter-spacing: -.04em; color: var(--garis) }
+.ie-empat { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; margin-top: 8px }
+.ie-empat div { background: var(--panel-2); border: 1px solid var(--garis-ui); border-radius: 12px; padding: 8px; text-align: center }
+.ie-empat small { display: block; font: 600 10px var(--f-kode); text-transform: uppercase; color: var(--redup) }
+.ie-empat b { font: 750 18px var(--f-judul) }
+.ie-langkah { margin: 8px 0 0; padding-left: 20px; display: grid; gap: 8px; font-size: 14.5px }
+.ie-promo { display: grid; gap: 2px; text-decoration: none; position: relative; border: 2px solid color-mix(in srgb, var(--garis) 45%, var(--garis-ui)); transition: transform .15s }
+.ie-promo:hover { transform: translateY(-2px) }
+.ie-promo b { font: 750 19px var(--f-judul) }
+.ie-promo .panah { position: absolute; right: 18px; top: 50%; transform: translateY(-50%); color: var(--garis) }
+.kapital { text-transform: capitalize }
+.ie-wadah { --garis: #3657F5; min-height: 100dvh }
+.ie-ujian { max-width: 1180px; margin: 0 auto; padding: 0 20px 60px; display: grid; gap: 14px }
+.ie-ujian.sempit { max-width: 760px }
+.ie-atas { position: sticky; top: 0; z-index: 10; display: flex; align-items: center; gap: 10px; padding: 12px 0; background: color-mix(in srgb, var(--bg) 90%, transparent); backdrop-filter: blur(8px); border-bottom: 1px solid var(--garis-ui); flex-wrap: wrap }
+.ie-judul { display: grid; gap: 2px; min-width: 0 }
+.ie-judul b { font: 700 16px var(--f-judul) }
+.ie-timer { font-variant-numeric: tabular-nums; font-weight: 700 }
+.ie-timer.mepet { color: var(--bad); border-color: var(--bad) }
+.chip-stat.cukup { color: var(--ok); border-color: var(--ok) }
+.ie-split { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 14px; align-items: start }
+.ie-bacaan { font-size: 16px; line-height: 1.75; max-height: calc(100dvh - 130px); overflow-y: auto; position: sticky; top: 76px }
+.ie-bacaan p:first-child { margin-top: 0 }
+.ie-tab-hp { display: none; justify-self: start }
+.ie-instruksi { font-weight: 700; margin: 18px 0 8px; padding-top: 14px; border-top: 1px dashed var(--garis-ui) }
+.ie-instruksi:first-child { margin-top: 0; padding-top: 0; border-top: 0 }
+.ie-soal { display: flex; gap: 12px; padding: 10px 0 }
+.ie-soal > div { flex: 1; min-width: 0 }
+.ie-soal p { margin: 2px 0 8px }
+.ie-no { flex: none; width: 28px; height: 28px; border-radius: 8px; display: grid; place-items: center; background: var(--garis); color: #fff; font: 700 12px var(--f-kode) }
+.ie-opsi { display: grid; gap: 6px }
+.ie-opsi.tiga { grid-template-columns: repeat(3, minmax(0, 1fr)) }
+.op.kecil { padding: 9px 12px; font-size: 14px; border-radius: 12px; justify-content: center; text-align: center }
+.ie-opsi:not(.tiga) .op.kecil { justify-content: flex-start; text-align: left }
+.ie-isian { width: 100%; padding: 10px 12px; border: 2px solid var(--garis-kuat); border-radius: 12px; background: var(--panel); font-size: 15px; outline: none }
+.ie-isian:focus { border-color: var(--garis) }
+.ie-hasil { display: grid; gap: 14px }
+.ie-hasil:empty { display: none }
+.ie-tiket .tiket-kiri { gap: 2px }
+.ie-band { font: 800 44px/1 var(--f-judul); color: var(--garis) }
+.ie-rinci tr.ok td:last-child { color: var(--ok) }
+.ie-rinci tr.bad td:last-child { color: var(--bad) }
+.ie-rinci tr.bad td:nth-child(2) { color: var(--bad) }
+.ie-naskah summary { cursor: pointer; font-weight: 650 }
+.beres-tombol.baris { flex-direction: row; flex-wrap: wrap }
+.baris-tombol { display: flex; align-items: center; gap: 10px; flex-wrap: wrap }
+.ie-audio { display: grid; gap: 12px }
+.ie-gelombang { display: flex; align-items: center; gap: 4px; height: 46px }
+.ie-gelombang i { flex: 1; height: 20%; border-radius: 3px; background: color-mix(in srgb, var(--garis) 35%, var(--panel)) }
+.ie-gelombang.jalan i { background: var(--garis); animation: gelombang 1s ease-in-out infinite; animation-delay: calc(var(--i) * -63ms) }
+@keyframes gelombang { 0%, 100% { height: 20% } 50% { height: 95% } }
+.ie-task { justify-self: start }
+.ie-soal-tulis { font-size: 16px; font-weight: 600; margin-top: 0 }
+.ie-grafik { width: 100%; height: auto; display: block; margin: 8px 0 }
+.ie-grafik .ie-grid { stroke: var(--garis-ui) }
+.ie-grafik .ie-sumbu { font: 500 11px var(--f-teks); fill: var(--redup) }
+.ie-grafik .ie-sumbu.besar { font-size: 12px; fill: var(--ink-2) }
+.ie-grafik .ie-sumbu.tebal { font-weight: 700; fill: var(--ink) }
+.ie-grafik .ie-nilai { font: 600 10px var(--f-kode); fill: var(--ink-2) }
+.ie-esai { min-height: 420px }
+.ie-kriteria .oke { border-color: color-mix(in srgb, var(--ok) 50%, var(--garis-ui)) }
+.ie-kriteria .oke span { color: var(--ok) }
+.ie-kriteria .cek span { color: var(--amber-ink) }
+.ie-kriteria span { display: block }
+.tag.ok-tag { background: var(--ok-bg); color: var(--ok) }
+.ie-ai { display: grid; gap: 8px; justify-items: start }
+.ie-ai .baris-tombol, .ie-ai { grid-auto-flow: row }
+.ie-sp-kartu { display: grid; gap: 10px }
+.ie-poin { margin: 0; padding-left: 20px; color: var(--ink-2) }
+@media (max-width: 980px) { .ielts-grid { grid-template-columns: minmax(0, 1fr) } }
+@media (max-width: 760px) {
+  .ie-ujian { padding: 0 16px 40px }
+  .ie-tab-hp { display: inline-flex }
+  .ie-split:not(.tulis-split) { grid-template-columns: minmax(0, 1fr) }
+  .ie-split:not(.tulis-split)[data-tampil="teks"] .ie-soalan, .ie-split:not(.tulis-split)[data-tampil="soal"] .ie-bacaan { display: none }
+  .ie-bacaan { max-height: none; position: static }
+  .tulis-split { grid-template-columns: minmax(0, 1fr) }
+  .ie-esai { min-height: 260px }
+  .ie-opsi.tiga { grid-template-columns: minmax(0, 1fr) }
+  .ie-atas .btn.utama { padding: 8px 14px }
+}
+
 /* ---------- profil ---------- */
 .profil-kepala { display: flex; gap: 20px; align-items: center; margin-bottom: 18px; flex-wrap: wrap }
 .avatar { width: 84px; height: 84px; border-radius: 26px; display: grid; place-items: center; font: 800 32px var(--f-judul); background: var(--ink); color: var(--amber); position: relative }

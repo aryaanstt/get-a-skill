@@ -160,7 +160,7 @@ window.GAS_KURSUS = window.GAS_KURSUS || {}
         { t: 'info', judul: 'Empat bagian, skor 0 sampai 9', isi: '<p><b>Listening</b> 30 menit, <b>Reading</b> 60 menit, <b>Writing</b> 60 menit (Task 1 min. 150 kata, Task 2 min. 250 kata), <b>Speaking</b> 11 sampai 14 menit.</p><p>Banyak beasiswa dan MT minta overall 6,5. Ada versi <b>Academic</b> (kuliah) dan <b>General Training</b> (kerja/migrasi).</p>' },
         { t: 'pasang', tanya: 'Pasangin bagian IELTS dengan durasinya.', pasangan: [['Listening', '30 menit'], ['Reading', '60 menit'], ['Writing', '60 menit '], ['Speaking', '11 sampai 14 menit']] },
         { t: 'pilih', tanya: 'Writing Task 2 minimal berapa kata?', opsi: ['250', '150', '300', '200'], benar: 0 },
-        { t: 'info', judul: 'Mau coba mock test?', isi: '<p>Mock IELTS versi lama (Reading dan Listening bernilai otomatis, Writing dan Speaking pakai Tutor AI) masih bisa dibuka di <a href="https://aryaanstt.github.io/get-a-skill/ielts.html" target="_blank" rel="noopener">halaman mock IELTS</a>. Nanti dipindahin ke tampilan baru ini.</p>' },
+        { t: 'info', judul: 'Mau coba mock test?', isi: '<p>Buka <a href="#ielts">Mock IELTS</a>: Reading dan Listening dinilai otomatis, Writing dan Speaking dianalisis dan bisa dinilai Tutor AI. Ada di menu Latihan juga.</p>' },
       ] },
     ],
   }

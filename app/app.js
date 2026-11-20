@@ -311,6 +311,7 @@
         <aside class="kolom-samping">
           ${statusLv}
           <section class="panel"><div class="panel-kepala"><h2>Progres</h2><b>${pr.persen}%</b></div><div class="bar"><i style="width:${pr.persen}%"></i></div><p class="redup kecil">${pr.n} dari ${pr.total} pelajaran</p></section>
+          ${id === 'EN' ? `<a class="panel ie-promo" href="#ielts" style="--garis:#3657F5"><span class="label-kecil">Mock test</span><b>Mock IELTS</b><span class="redup kecil">Reading, Listening, Writing, Speaking dengan timer. Dapet estimasi band.</span>${ikon('kanan', 18, 'panah')}</a>` : ''}
           <section class="panel"><h2>Kenapa penting</h2><p class="redup">${S.kenapa}</p></section>
         </aside>
       </div></div>`)
@@ -325,7 +326,7 @@
         <a class="lat-kartu" href="#latihan-psikotes" style="--garis:#7B4DE0"><div class="lat-ikon">${ikon('sigma', 28)}</div><b>Sprint psikotes</b><p class="redup kecil">60 detik. Deret angka, persen, pecahan, hitung cepat. Soal baru tiap main.</p><span class="lat-stat">${rekor ? 'Rekor ' + rekor : 'Belum main'}</span></a>
         <a class="lat-kartu" href="#latihan-kartu" style="--garis:#0E9F9A"><div class="lat-ikon">${ikon('kartu', 28)}</div><b>Kartu hafalan</b><p class="redup kecil">Istilah dunia kerja dan English kantor. Diulang pakai sistem kotak Leitner.</p><span class="lat-stat">${jatuh} kartu siap diulang</span></a>
         <a class="lat-kartu" href="#latihan-interview" style="--garis:#F2542D"><div class="lat-ikon">${ikon('obrol', 28)}</div><b>Simulasi interview</b><p class="redup kecil">Pertanyaan acak, timer persiapan dan jawaban, ketik atau ngomong, terus dianalisis.</p><span class="lat-stat">${d.latihan.interview}x latihan</span></a>
-        ${`<a class="lat-kartu" href="https://aryaanstt.github.io/get-a-skill/ielts.html" target="_blank" rel="noopener" style="--garis:#3657F5"><div class="lat-ikon">${ikon('tiket', 28)}</div><b>Mock IELTS</b><p class="redup kecil">Versi lama: Reading dan Listening dinilai otomatis. Nanti dipindah ke tampilan ini.</p><span class="lat-stat">Buka di tab baru</span></a>`}
+        <a class="lat-kartu" href="#ielts" style="--garis:#3657F5"><div class="lat-ikon">${ikon('tiket', 28)}</div><b>Mock IELTS</b><p class="redup kecil">Reading, Listening, Writing, dan Speaking pakai timer kayak ujian asli. Reading dan Listening dinilai otomatis.</p><span class="lat-stat">${(d.ielts || []).length ? (d.ielts || []).length + 'x tes' : 'Belum pernah'}</span></a>
       </div></div>`)
   }
   const latihanMode = m => {
@@ -377,6 +378,7 @@
   const render = () => {
     const [r, a, b] = location.hash.replace(/^#\/?/, '').split(/[\/-]/)
     window.scrollTo(0, 0)
+    if (window.GAS_IELTS) GAS_IELTS.henti()
     if (r === 'masuk' || r === 'daftar') { if (G.masuk() && !G.tamu()) return go('#beranda'); return auth(r) }
     if (!G.masuk()) return landing()
     if (!G.D().onboarding && r !== 'mulai') return go('#mulai')
@@ -391,6 +393,7 @@
         return GAS_PEMUTAR.pelajaran(document.getElementById('pm'), a, b, { tutup: () => go('#skill-' + a), lanjut: pid => go(`#belajar-${a}-${pid}`) })
       }
       case 'latihan': return a ? latihanMode(a) : latihanHub()
+      case 'ielts': if (a) { polos('<div class="ie-wadah"></div>'); return GAS_IELTS.buka(hal().querySelector('.ie-wadah'), a, { kembali: () => go('#ielts') }) } kerangka('latihan', '<div class="ielts-wadah"></div>'); return GAS_IELTS.beranda(hal().querySelector('.ielts-wadah'))
       case 'profil': return profil()
       case 'beranda': return beranda()
       default: return beranda()
