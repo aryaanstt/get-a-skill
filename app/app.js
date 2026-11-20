@@ -101,7 +101,7 @@
         <h2>Pilih jalurmu</h2><p class="redup">Semua jalur nyambung ke garis <b>Siap Kerja</b>: CV, psikotes, interview, dan bahasa Inggris.</p>
         <div class="jalur-grid">${KAT.jalur.map(j => `<div class="jalur-kartu" style="--garis:${j.warna}"><b>${j.nama}</b><span class="redup kecil">${j.ket}</span><div class="kode-baris">${j.skill.map(s => `<span class="kode kecil" style="background:${j.warna}">${s}</span>`).join('')}</div></div>`).join('')}</div>
       </section>
-      <footer class="lnd-kaki"><span>${logo()}</span><span class="redup kecil">${G.akun.awan() ? 'Satu akun buat semua perangkat. Progres disimpan di server.' : 'Mode lokal: akun dan progres cuma di perangkat ini.'}</span></footer>
+      <footer class="lnd-kaki"><span>${logo()} <a class="redup kecil bagian-dari" href="../../get-it/">bagian dari <b>get it</b></a></span><span class="redup kecil">${G.akun.awan() ? 'Satu akun buat semua perangkat. Progres disimpan di server.' : 'Mode lokal: akun dan progres cuma di perangkat ini.'}</span></footer>
     </div>`)
     GAS_PETA.gambar(document.getElementById('peta-hero'), { lines: contoh, kereta: !G.reduksi(), ringkas: true, legenda: true, minSkala: .62, klik: () => go('#daftar') })
     GAS_PEMUTAR.demo(document.getElementById('demo'), window.GAS_KURSUS.EX.pelajaran[0].langkah[2], () => G.konfeti())
