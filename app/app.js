@@ -59,7 +59,7 @@
         <h2>Pilih jalurmu</h2><p class="redup">Semua jalur nyambung ke garis <b>Siap Kerja</b>: CV, psikotes, interview, dan bahasa Inggris.</p>
         <div class="jalur-grid">${KAT.jalur.map(j => `<div class="jalur-kartu" style="--garis:${j.warna}"><b>${j.nama}</b><span class="redup kecil">${j.ket}</span><div class="kode-baris">${j.skill.map(s => `<span class="kode kecil" style="background:${j.warna}">${s}</span>`).join('')}</div></div>`).join('')}</div>
       </section>
-      <footer class="lnd-kaki"><span>${logo()}</span><span class="redup kecil">Prototipe. Akun dan progres disimpan di perangkat ini, belum di server.</span></footer>
+      <footer class="lnd-kaki"><span>${logo()}</span><span class="redup kecil">${G.akun.awan() ? 'Satu akun buat semua perangkat. Progres disimpan di server.' : 'Mode lokal: akun dan progres cuma di perangkat ini.'}</span></footer>
     </div>`)
     GAS_PETA.gambar(document.getElementById('peta-hero'), { lines: contoh, kereta: !G.reduksi(), ringkas: true, legenda: true, minSkala: .62, klik: () => go('#daftar') })
     GAS_PEMUTAR.demo(document.getElementById('demo'), window.GAS_KURSUS.EX.pelajaran[0].langkah[2], () => G.konfeti())
@@ -83,17 +83,21 @@
         <p class="tengah kecil">${daftar ? 'Udah punya akun? <a href="#masuk">Masuk</a>' : 'Belum punya akun? <a href="#daftar">Daftar</a>'}</p>
         <div class="atau"><span>atau</span></div>
         <button class="btn garis penuh tamu">Lanjut tanpa akun</button>
-        <p class="catatan">${ikon('gembok', 14)} Prototipe: akun disimpan di browser perangkat ini (kata sandi di-hash), belum ada server. Jangan pakai kata sandi yang sama dengan akun penting.</p>
+        <p class="catatan">${ikon('gembok', 14)} ${G.akun.awan() ? 'Akun dan progres disimpan di server (Supabase), jadi satu akun bisa dipakai di HP dan laptop. Kata sandi disimpan dalam bentuk terenkripsi.' : 'Mode lokal: akun cuma kesimpen di browser ini. Buka situs aslinya buat akun yang nyambung antarperangkat.'}</p>
       </div>
       <div class="auth-hias" aria-hidden="true"><div id="peta-auth"></div></div>
     </div>`)
     GAS_PETA.gambar(document.getElementById('peta-auth'), { lines: [KAT.jalur[0], KAT.jalur[6], KAT.siapKerja], kereta: !G.reduksi(), ringkas: true, legenda: false })
     const f = hal().querySelector('form'), gl = f.querySelector('.galat')
     f.onsubmit = async e => {
-      e.preventDefault(); gl.hidden = true
+      e.preventDefault(); gl.hidden = true; gl.className = 'galat'
       const v = Object.fromEntries(new FormData(f))
       try {
-        if (daftar) await G.akun.daftar(v.nama, v.email, v.pass); else await G.akun.masuk(v.email, v.pass)
+        const btn = f.querySelector('button'); btn.disabled = true; btn.textContent = 'Sebentar…'
+        try {
+          if (daftar) { const h = await G.akun.daftar(v.nama, v.email, v.pass); if (h && h.konfirmasi) { gl.className = 'info-ok'; gl.innerHTML = 'Akun dibuat. Buka email dari Supabase (cek juga folder spam), klik link konfirmasinya, terus <a href="#masuk">masuk</a> pakai email dan kata sandi tadi.'; gl.hidden = false; return } }
+          else await G.akun.masuk(v.email, v.pass)
+        } finally { btn.disabled = false; btn.textContent = daftar ? 'Daftar' : 'Masuk' }
         go(G.D().onboarding ? '#beranda' : '#mulai')
       } catch (err) { gl.textContent = err.message; gl.hidden = false }
     }
@@ -352,7 +356,7 @@
     kerangka('profil', `<div class="profil">
       <header class="profil-kepala"><div class="avatar" aria-hidden="true">${esc(awal)}</div><div><h1>${esc(G.nama())}</h1><p class="redup">${G.tamu() ? 'Mode tamu' : esc(G.akun.email())} · ${st ? st.label : ''}${ob.lulusTahun ? ' · lulus ' + (ob.lulusBulan ? G.BULAN[ob.lulusBulan - 1] + ' ' : '') + ob.lulusTahun : ''}${ob.rumpun ? ' · ' + esc(ob.rumpun) : ''}</p>
         <div class="chip-baris">${G.jalurUser().map(j => `<span class="chip diam jl" style="--garis:${j.warna}"><i></i>${j.nama}</span>`).join('')}</div></div></header>
-      ${G.tamu() ? `<div class="panel ajak-akun">${ikon('gembok', 20)}<div><b>Progres kamu cuma ada di browser ini</b><p class="redup kecil">Bikin akun biar ga ilang kalau ganti mode. (Di prototipe ini akun juga masih lokal.)</p></div><a href="#daftar" class="btn utama">Bikin akun</a></div>` : ''}
+      ${G.tamu() ? `<div class="panel ajak-akun">${ikon('gembok', 20)}<div><b>Progres kamu cuma ada di browser ini</b><p class="redup kecil">Bikin akun biar ga ilang kalau ganti mode.</p></div><a href="#daftar" class="btn utama">Bikin akun</a></div>` : ''}
       <div class="statistik besar"><div><small>Total XP</small><b>${G.angka(d.xp)}</b></div><div><small>Level</small><b>${lv.lv}</b></div><div><small>Streak</small><b>${G.streak()}</b></div><div><small>Pelajaran</small><b>${Object.keys(d.pelajaran).length}</b></div><div><small>Tes</small><b>${Object.keys(d.tes).length}</b></div></div>
       <section><h2 class="judul-bagian">Tiket lulus</h2>${tiketLulus.length ? `<div class="tiket-grid">${tiketLulus.map(t => `<div class="tiket lulus" style="--garis:${G.warnaSkill(t.id)}"><div class="tiket-kiri">${kode(t.id, true)}</div><div class="tiket-isi"><span class="label-kecil">Tiket lulus · ${levelNama(t.l)}</span><h3>${KAT.skill[t.id].nama}</h3><p class="redup kecil">${t.tg ? G.tglPanjang(t.tg) : ''}</p></div></div>`).join('')}</div><p class="redup kecil">Tiket muncul tiap kamu beresin satu level. Ini catatan progres pribadi di aplikasi ini, bukan sertifikat resmi, jadi jangan dicantumin di CV sebagai sertifikasi.</p>` : '<p class="redup">Beresin semua pelajaran di satu level buat dapet tiket lulus pertama.</p>'}</section>
       <section><h2 class="judul-bagian">Lencana</h2><div class="lencana-grid">${KAT.lencana.map(l => `<div class="lencana ${d.lencana[l.id] ? 'dapat' : ''}">${ikon('medali', 26)}<b>${l.nama}</b><span class="redup kecil">${d.lencana[l.id] ? 'Didapat ' + G.tglPanjang(d.lencana[l.id]) : l.ket}</span></div>`).join('')}</div></section>
@@ -366,7 +370,7 @@
     hal().querySelectorAll('[data-tema]').forEach(b => b.onclick = () => { G.tema(b.dataset.tema); render() })
     hal().querySelectorAll('[data-tgt]').forEach(b => b.onclick = () => { ob.target = Number(b.dataset.tgt); G.simpan(); render() })
     hal().querySelector('.reset').onclick = async () => { if (await G.konfirmasi('Hapus semua XP, progres, dan jawaban onboarding di akun ini? Ga bisa dibalikin.', 'Hapus semua', true)) { G.reset(); go('#mulai') } }
-    hal().querySelector('.keluar').onclick = async () => { if (!G.tamu() || await G.konfirmasi('Progres tamu tetap tersimpan di browser ini. Keluar?', 'Keluar')) { G.akun.keluar(); go('#') } }
+    hal().querySelector('.keluar').onclick = async () => { if (!G.tamu() || await G.konfirmasi('Progres tamu tetap tersimpan di browser ini. Keluar?', 'Keluar')) { await G.akun.keluar(); go('#') } }
   }
 
   // ---------- router ----------
@@ -394,5 +398,6 @@
   }
   addEventListener('hashchange', render)
   matchMedia('(prefers-color-scheme: dark)').addEventListener('change', () => { if (G.tema() === 'sistem' && document.querySelector('.rel')) render() })
-  render()
+  hal().innerHTML = '<div class="muat"><span></span></div>'
+  G.siap.then(render, render)
 })()

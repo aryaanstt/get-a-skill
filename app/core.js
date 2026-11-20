@@ -5,7 +5,9 @@ window.G = (() => {
   const baca = () => { try { return JSON.parse(localStorage.getItem(KUNCI)) } catch (e) { return null } }
   let S = baca() || {}
   S.akun = S.akun || {}; S.data = S.data || {}; S.tema = S.tema || 'sistem'
-  const simpan = () => { try { localStorage.setItem(KUNCI, JSON.stringify(S)) } catch (e) { } }
+  let jadwalKirim = () => { }
+  const simpanLokal = () => { try { localStorage.setItem(KUNCI, JSON.stringify(S)) } catch (e) { } }
+  const simpan = () => { simpanLokal(); jadwalKirim() }
 
   // ---------- util ----------
   const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]))
@@ -51,10 +53,94 @@ window.G = (() => {
   const D = () => { const k = S.sesi; if (!k) return null; if (!S.data[k]) S.data[k] = dataBaru(); return S.data[k] }
   const masuk = () => !!S.sesi
   const tamu = () => S.sesi === 'tamu'
-  const nama = () => (D() && D().onboarding && D().onboarding.nama) || (S.akun[S.sesi] || {}).nama || 'Kamu'
+  const nama = () => (D() && D().onboarding && D().onboarding.nama) || metaNama || (S.akun[S.sesi] || {}).nama || 'Kamu'
 
+  // ---------- akun di server (Supabase) ----------
+  // Dipakai kalau situs dibuka langsung. Di dalam iframe (misal artifact) koneksi ke server diblok, jadi balik ke akun lokal.
+  const SB_URL = 'https://wtfshyfgcrglknogjgfb.supabase.co'
+  const SB_KEY = 'sb_publishable_-vUvZe04JtPTTGfF6LEY6A_y0l1n_Ff'
+  let sb = null, uid = null, emailAwan = null, metaNama = null, timerKirim = null
+  try { if (window.self === window.top && window.supabase && window.supabase.createClient) sb = window.supabase.createClient(SB_URL, SB_KEY, { auth: { persistSession: true, autoRefreshToken: true, storageKey: 'gas2-auth' } }) } catch (e) { sb = null }
+  const kunciAwan = id => 'u:' + id
+  const kirim = async () => {
+    clearTimeout(timerKirim)
+    if (!sb || !uid || S.sesi !== kunciAwan(uid) || !S.data[S.sesi]) return
+    try { await sb.from('progres').upsert({ user_id: uid, data: S.data[S.sesi], diperbarui: new Date().toISOString() }) } catch (e) { }
+  }
+  jadwalKirim = () => { if (sb && uid && S.sesi === kunciAwan(uid)) { clearTimeout(timerKirim); timerKirim = setTimeout(kirim, 1200) } }
+  document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'hidden') kirim() })
+  const tarik = async user => {
+    uid = user.id; emailAwan = user.email; metaNama = (user.user_metadata || {}).nama || null
+    const k = kunciAwan(uid)
+    const { data: row, error } = await sb.from('progres').select('data').eq('user_id', uid).maybeSingle()
+    if (error) throw new Error('Gagal ngambil progres dari server. Cek koneksi terus coba lagi.')
+    const lokal = S.data[k], awan = row && row.data && Object.keys(row.data).length ? row.data : null
+    if (awan) S.data[k] = lokal && (lokal.xp || 0) > (awan.xp || 0) ? lokal : awan
+    else if (S.sesi === 'tamu' && S.data.tamu) { S.data[k] = S.data.tamu; delete S.data.tamu }
+    else if (!lokal) S.data[k] = dataBaru()
+    S.sesi = k
+    simpanLokal(); await kirim()
+  }
+  const pesan = e => {
+    const m = (e && e.message) || String(e)
+    if (/invalid login/i.test(m)) return 'Email atau kata sandi salah'
+    if (/already (registered|exists)/i.test(m)) return 'Email ini udah terdaftar. Coba masuk.'
+    if (/not confirmed/i.test(m)) return 'Email belum dikonfirmasi. Buka email dari Supabase (cek juga folder spam), klik link-nya, terus masuk lagi.'
+    if (/rate limit|too many|security purposes/i.test(m)) return 'Lagi kebanyakan percobaan. Tunggu sebentar, terus coba lagi.'
+    if (/password/i.test(m)) return 'Kata sandi minimal 6 karakter'
+    if (/fetch|network|load failed/i.test(m)) return 'Koneksi ke server bermasalah. Cek internet terus coba lagi.'
+    return m
+  }
+  const siap = (async () => {
+    if (!sb) return
+    try {
+      const { data } = await sb.auth.getSession()
+      const user = data && data.session && data.session.user
+      if (user) await tarik(user)
+      else if (S.sesi && S.sesi.startsWith('u:')) { S.sesi = null; simpanLokal() }
+    } catch (e) { if (S.sesi && S.sesi.startsWith('u:')) uid = S.sesi.slice(2) }
+  })()
+
+  const cekIsian = (email, pass) => {
+    if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)) throw new Error('Format email belum bener')
+    if (String(pass).length < 6) throw new Error('Kata sandi minimal 6 karakter')
+  }
   const akun = {
+    awan: () => !!sb,
     async daftar(nm, email, pass) {
+      if (sb) {
+        email = String(email).trim().toLowerCase()
+        if (!nm.trim()) throw new Error('Nama belum diisi')
+        cekIsian(email, pass)
+        const { data, error } = await sb.auth.signUp({ email, password: pass, options: { data: { nama: nm.trim() }, emailRedirectTo: location.origin + location.pathname } })
+        if (error) throw new Error(pesan(error))
+        if (data.user && Array.isArray(data.user.identities) && data.user.identities.length === 0) throw new Error('Email ini udah terdaftar. Coba masuk.')
+        if (!data.session) return { konfirmasi: true }
+        await tarik(data.user)
+        if (D().onboarding && !D().onboarding.nama) { D().onboarding.nama = nm.trim(); simpan() }
+        return {}
+      }
+      return akun.daftarLokal(nm, email, pass)
+    },
+    async masuk(email, pass) {
+      if (sb) {
+        email = String(email).trim().toLowerCase()
+        cekIsian(email, pass)
+        const { data, error } = await sb.auth.signInWithPassword({ email, password: pass })
+        if (error) throw new Error(pesan(error))
+        await tarik(data.user)
+        return
+      }
+      return akun.masukLokal(email, pass)
+    },
+    async keluar() {
+      if (sb && uid) { await kirim(); try { await sb.auth.signOut() } catch (e) { } uid = emailAwan = metaNama = null }
+      S.sesi = null; simpanLokal()
+    },
+    tamu() { S.sesi = 'tamu'; simpan() },
+    email: () => emailAwan || S.sesi,
+    info: () => sb ? (metaNama ? { nama: metaNama } : null) : S.akun[S.sesi] || null,
+    async daftarLokal(nm, email, pass) {
       email = String(email).trim().toLowerCase()
       if (!nm.trim()) throw new Error('Nama belum diisi')
       if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)) throw new Error('Format email belum bener')
@@ -67,17 +153,13 @@ window.G = (() => {
       if (D().onboarding) D().onboarding.nama = D().onboarding.nama || nm.trim()
       simpan()
     },
-    async masuk(email, pass) {
+    async masukLokal(email, pass) {
       email = String(email).trim().toLowerCase()
       const a = S.akun[email]
       if (!a) throw new Error('Email belum terdaftar di perangkat ini')
       if (await hash(a.salt + pass) !== a.hash) throw new Error('Kata sandi salah')
       S.sesi = email; simpan()
     },
-    tamu() { S.sesi = 'tamu'; simpan() },
-    keluar() { S.sesi = null; simpan() },
-    email: () => S.sesi,
-    info: () => S.akun[S.sesi] || null,
   }
 
   // ---------- XP, streak, level ----------
@@ -251,7 +333,7 @@ window.G = (() => {
 
   return {
     KAT, LV, S: () => S, simpan, esc, acak, tgl, geser, tglPanjang, BULAN, HARI, angka, reduksi,
-    akun, D, masuk, tamu, nama, hariIni, target, streak, levelXP, tambahXP, cekLencana,
+    akun, siap, D, masuk, tamu, nama, hariIni, target, streak, levelXP, tambahXP, cekLencana,
     kursus, levelSkill, status, progres, berikut, jalurUser, warnaSkill, skillUser,
     ikon, toast, konfeti, salin, konfirmasi, tema,
     reset() { if (S.sesi) { S.data[S.sesi] = dataBaru(); simpan() } },
