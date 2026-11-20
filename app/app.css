@@ -130,6 +130,13 @@ code { font-family: var(--f-kode); font-size: .88em; background: var(--panel-2);
 .wm-get .kap { display: inline-block; border-radius: .32em; padding: .02em .17em .12em; margin-right: .02em; box-shadow: inset 0 0 0 max(1.5px, .04em) currentColor }
 .wm-get .aks { color: var(--merek) }
 .bagian-dari { margin-left: 10px; text-decoration: none }
+/* header atas khusus HP (di laptop logo ada di sidebar) */
+.atas-hp { display: none; align-items: center; gap: 8px; padding: 2px 0 14px; margin-bottom: 6px; border-bottom: 1px solid var(--garis-ui) }
+.atas-hp .spasi { flex: 1 }
+.atas-hp .logo { padding: 0 }
+.atas-hp .wm-get { font-size: 22px }
+.stat-hp { display: inline-flex; gap: 10px; font: 650 12.5px/1 var(--f-teks); color: var(--ink-2) }
+.stat-hp span { display: inline-flex; align-items: center; gap: 4px }
 .bagian-dari:hover { color: var(--ink) }
 .app { display: grid; grid-template-columns: 236px minmax(0, 1fr); min-height: 100dvh }
 .rel { position: sticky; top: 0; height: 100dvh; display: flex; flex-direction: column; gap: 26px; padding: 22px 16px; border-right: 1px solid var(--garis-ui); background: color-mix(in srgb, var(--panel) 72%, transparent); backdrop-filter: blur(10px); z-index: 20 }
@@ -767,6 +774,7 @@ table.hasil th, table.hasil td { padding: 7px 11px; border-bottom: 1px solid var
   .app { display: block }
   .rel { position: fixed; top: auto; bottom: 0; left: 0; right: 0; height: auto; flex-direction: row; padding: 6px 8px calc(6px + env(safe-area-inset-bottom)); border-right: 0; border-top: 1px solid var(--garis-ui); background: color-mix(in srgb, var(--panel) 90%, transparent) }
   .rel .logo, .rel-bawah { display: none }
+  .atas-hp { display: flex }
   .rel-menu { display: flex; justify-content: space-around; width: 100% }
   .rel-menu a { flex-direction: column; gap: 3px; padding: 6px 4px; font-size: 11px; font-weight: 650; flex: 1; text-align: center }
   .rel-menu a.on { background: none; color: var(--ink) }

@@ -20,11 +20,13 @@
         <div class="rel-bawah"><div class="rel-stat"><span title="Streak">${ikon('api', 16)} ${G.streak()}</span><span title="Level">${ikon('petir', 16)} Lv ${lv.lv}</span></div>
         <button class="ikon-btn tema-btn" aria-label="Ganti tema">${ikon(document.documentElement.dataset.theme === 'dark' || (!document.documentElement.dataset.theme && matchMedia('(prefers-color-scheme: dark)').matches) ? 'matahari' : 'bulan', 20)}</button></div>
       </nav>
-      <main class="isi" id="isi" tabindex="-1">${isi}</main></div>`
-    hal().querySelector('.tema-btn').onclick = () => {
+      <main class="isi" id="isi" tabindex="-1">
+        <header class="atas-hp">${logo()}<span class="spasi"></span><span class="stat-hp"><span title="Streak">${ikon('api', 15)} ${G.streak()}</span><span title="Level">${ikon('petir', 15)} Lv ${lv.lv}</span></span><button class="ikon-btn tema-btn" aria-label="Ganti tema">${ikon(document.documentElement.dataset.theme === 'dark' || (!document.documentElement.dataset.theme && matchMedia('(prefers-color-scheme: dark)').matches) ? 'matahari' : 'bulan', 20)}</button></header>
+        ${isi}</main></div>`
+    hal().querySelectorAll('.tema-btn').forEach(b => b.onclick = () => {
       const gelap = document.documentElement.dataset.theme === 'dark' || (!document.documentElement.dataset.theme && matchMedia('(prefers-color-scheme: dark)').matches)
       G.tema(gelap ? 'light' : 'dark'); render()
-    }
+    })
   }
   const polos = html => { document.body.className = 'polos'; hal().innerHTML = html }
 
