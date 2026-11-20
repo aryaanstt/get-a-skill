@@ -130,6 +130,15 @@ code { font-family: var(--f-kode); font-size: .88em; background: var(--panel-2);
 .wm-get .kap { display: inline-block; border-radius: .32em; padding: .02em .17em .12em; margin-right: .02em; box-shadow: inset 0 0 0 max(1.5px, .04em) currentColor }
 .wm-get .aks { color: var(--merek) }
 .bagian-dari { margin-left: 10px; text-decoration: none }
+/* kuis harian */
+.harian-panel { position: relative; display: grid; gap: 4px; text-decoration: none; border-left: 4px solid var(--garis, var(--amber)); padding-right: 40px }
+.harian-panel .panah { position: absolute; right: 14px; top: 50%; transform: translateY(-50%) }
+.harian-list { display: grid; gap: 6px }
+.harian-list a { display: flex; align-items: center; gap: 10px; padding: 8px 10px; border-radius: 12px; border: 1px solid var(--garis-ui); text-decoration: none; font-weight: 650; font-size: 14px }
+.harian-list a:hover { background: var(--panel-2) }
+.harian-list a span { flex: 1 }
+.harian-list b { font-size: 12.5px; color: var(--redup) }
+.harian-list b.udah { color: var(--ok) }
 /* header atas khusus HP (di laptop logo ada di sidebar) */
 .atas-hp { display: none; align-items: center; gap: 8px; padding: 2px 0 14px; margin-bottom: 6px; border-bottom: 1px solid var(--garis-ui) }
 .atas-hp .spasi { flex: 1 }

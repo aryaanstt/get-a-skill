@@ -8,6 +8,19 @@
   const logo = () => `<a class="logo" href="#" aria-label="get a skill, beranda"><span class="wm-get" aria-hidden="true"><span class="kap">get</span> <span class="aks">a</span> skill<span class="aks">.</span></span></a>`
   const levelNama = id => (KAT.level.find(l => l.id === id) || {}).nama
 
+  // ---------- kuis harian ----------
+  // 5 soal per skill per hari, diambil dari soal tes penempatan + langkah bernilai di semua pelajaran skill itu.
+  // Urutan diacak pakai benih tetap per skill, tiap hari ngambil 5 berikutnya, jadi beda dari kemarin.
+  const DINILAI = ['pilih', 'banyak', 'angka', 'pasang', 'urut', 'skenario', 'isian', 'slider', 'sql', 'excel']
+  const benih = s => { let h = 2166136261; for (const c of s) { h ^= c.charCodeAt(0); h = Math.imul(h, 16777619) } return h >>> 0 }
+  const acakBenih = (arr, seed) => { const a = arr.slice(); let x = seed || 1; const r = () => { x = (x + 0x6D2B79F5) | 0; let t = Math.imul(x ^ (x >>> 15), 1 | x); t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t; return ((t ^ (t >>> 14)) >>> 0) / 4294967296 }; for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(r() * (i + 1)); [a[i], a[j]] = [a[j], a[i]] } return a }
+  const kolamHarian = id => { const K = G.kursus(id); if (!K) return []; return [...(K.tes || []).map(t => ({ t: 'pilih', tanya: t.tanya, opsi: t.opsi, benar: t.benar, jelas: 'Soal dari bank tes ' + KAT.skill[id].pendek + '.' })), ...(K.harian || []), ...K.pelajaran.flatMap(p => p.langkah.filter(l => DINILAI.includes(l.t)))] }
+  const hariKe = t => Math.floor(Date.parse(t + 'T00:00:00Z') / 864e5)
+  const soalHarian = (id, t = G.tgl()) => { const k = acakBenih(kolamHarian(id), benih(id)); if (!k.length) return []; const d = hariKe(t); return Array.from({ length: Math.min(5, k.length) }, (_, i) => k[(d * 5 + i) % k.length]) }
+  const skorHarian = (id, t = G.tgl()) => ((G.D().harian || {})[id] || {})[t]
+  const streakHarian = id => { let t = G.tgl(); if (skorHarian(id, t) === undefined) t = G.geser(t, -1); let n = 0; while (skorHarian(id, t) !== undefined && n < 400) { n++; t = G.geser(t, -1) } return n }
+  const panelHarian = id => { const s = skorHarian(id), st = streakHarian(id); return `<a class="panel harian-panel" href="#harian-${id}" style="--garis:${G.warnaSkill(id)}"><span class="label-kecil">${ikon('target', 14)} Kuis harian</span><b>${s !== undefined ? `Hari ini: akurasi ${s}%` : '5 soal baru hari ini'}</b><span class="redup kecil">${st ? `Streak ${st} hari. ` : ''}Soal ganti tiap hari, beda dari kemarin.</span>${ikon('kanan', 18, 'panah')}</a>` }
+
   // ---------- kerangka aplikasi ----------
   const NAV = [['beranda', 'Beranda', 'rumah'], ['jelajah', 'Jelajah', 'kompas'], ['latihan', 'Latihan', 'target'], ['profil', 'Profil', 'orang']]
   const kerangka = (aktif, isi) => {
@@ -290,6 +303,7 @@
           <section class="panel target-hari"><div class="cincin-wadah">${cincinTarget(xpHari, tgt)}<div class="cincin-teks"><b>${xpHari}</b><span>/ ${tgt} XP</span></div></div>
             <div><h2>Target hari ini</h2><p class="redup kecil">${xpHari >= tgt ? 'Tercapai! Lanjut kalau masih semangat.' : `${tgt - xpHari} XP lagi. Satu pelajaran sekitar 40 sampai 70 XP.`}</p>
             <div class="minggu">${minggu.map(t => `<span class="${d.hari[t] ? 'isi' : ''} ${t === G.tgl() ? 'ini' : ''}" title="${G.tglPanjang(t)}"><i></i>${G.HARI[new Date(t + 'T00:00:00').getDay()][0]}</span>`).join('')}</div></div></section>
+          <section class="panel"><div class="panel-kepala"><h2>Kuis harian</h2><span class="kecil redup">5 soal per skill</span></div><div class="harian-list">${[...new Set(lines.flatMap(l => l.skill))].slice(0, 6).map(s => `<a href="#harian-${s}">${kode(s)}<span>${esc(KAT.skill[s].pendek)}</span><b class="${skorHarian(s) !== undefined ? 'udah' : ''}">${skorHarian(s) !== undefined ? skorHarian(s) + '%' : 'Kerjain'}</b></a>`).join('')}</div></section>
           <section class="panel"><div class="panel-kepala"><h2>Level ${lv.lv}</h2><span class="kecil redup">${lv.sisa}/${lv.butuh} XP</span></div><div class="bar"><i style="width:${lv.sisa / lv.butuh * 100}%"></i></div></section>
           <section class="panel"><div class="panel-kepala"><h2>Aktivitas</h2><span class="kecil redup">12 minggu</span></div>${heatmap()}</section>
           <section class="panel"><div class="panel-kepala"><h2>Lencana</h2><span class="kecil redup">${Object.keys(d.lencana).length}/${KAT.lencana.length}</span></div><div class="lencana-mini">${KAT.lencana.map(l => `<span class="lc ${d.lencana[l.id] ? 'dapat' : ''}" title="${esc(l.nama)}: ${esc(l.ket)}">${ikon('medali', 18)}</span>`).join('')}</div><a href="#profil" class="kecil">Liat semua</a></section>
@@ -362,6 +376,7 @@
         <section><h2 class="judul-bagian">Rute belajar</h2><ol class="rute">${zona}</ol></section>
         <aside class="kolom-samping">
           ${statusLv}
+          ${panelHarian(id)}
           <section class="panel"><div class="panel-kepala"><h2>Progres</h2><b>${pr.persen}%</b></div><div class="bar"><i style="width:${pr.persen}%"></i></div><p class="redup kecil">${pr.n} dari ${pr.total} pelajaran</p></section>
           ${id === 'EN' ? `<a class="panel ie-promo" href="#ielts" style="--garis:#3657F5"><span class="label-kecil">Mock test</span><b>Mock IELTS</b><span class="redup kecil">Reading, Listening, Writing, Speaking dengan timer. Dapet estimasi band.</span>${ikon('kanan', 18, 'panah')}</a>` : ''}
           <section class="panel"><h2>Kenapa penting</h2><p class="redup">${S.kenapa}</p></section>
@@ -445,6 +460,12 @@
         const K = G.kursus(a); if (!K || !K.pelajaran.find(p => p.id === b)) return go('#beranda')
         polos('<div id="pm"></div>')
         return GAS_PEMUTAR.pelajaran(document.getElementById('pm'), a, b, { tutup: () => go('#skill-' + a), lanjut: pid => go(`#belajar-${a}-${pid}`) })
+      }
+      case 'harian': {
+        const K = G.kursus(a); if (!K) return go('#jelajah')
+        const langkah = soalHarian(a); if (!langkah.length) return go('#skill-' + a)
+        polos('<div id="pm"></div>')
+        return GAS_PEMUTAR.pelajaran(document.getElementById('pm'), a, 'harian', { pel: { id: 'harian', judul: `Kuis harian ${KAT.skill[a].pendek} · ${G.tglPanjang(G.tgl())}`, langkah }, harian: true, tutup: () => go('#skill-' + a), lanjut: () => go('#skill-' + a) })
       }
       case 'latihan': return a ? latihanMode(a) : latihanHub()
       case 'ielts': if (a) { polos('<div class="ie-wadah"></div>'); return GAS_IELTS.buka(hal().querySelector('.ie-wadah'), a, { kembali: () => go('#ielts') }) } kerangka('latihan', '<div class="ielts-wadah"></div>'); return GAS_IELTS.beranda(hal().querySelector('.ielts-wadah'))

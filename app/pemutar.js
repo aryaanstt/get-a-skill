@@ -335,7 +335,7 @@ window.GAS_PEMUTAR = (() => {
   }
 
   const pelajaran = (el, id, pid, o) => {
-    const K = G.kursus(id), p = K.pelajaran.find(x => x.id === pid)
+    const K = G.kursus(id), p = o.pel || K.pelajaran.find(x => x.id === pid) // o.pel: pelajaran rakitan (kuis harian)
     const warna = G.warnaSkill(id)
     const U = kerangka(el, warna, `${KAT.skill[id].pendek} · ${p.judul}`)
     const antre = p.langkah.map((s, i) => ({ s, i, ulang: false }))
@@ -413,18 +413,18 @@ window.GAS_PEMUTAR = (() => {
 
     const beres = () => {
       document.removeEventListener('keydown', tombol)
-      const d = G.D(), k = `${id}/${pid}`, pertamaKali = !d.pelajaran[k]
+      const d = G.D(), k = `${id}/${pid}`, pertamaKali = !o.harian && !d.pelajaran[k]
       const akurasi = nilaiTotal ? Math.round(nilaiBenar / nilaiTotal * 100) : 100
       const bonus = pertamaKali ? 15 : 0
       const detik = Math.round((Date.now() - mulai) / 1000)
-      d.pelajaran[k] = { tgl: G.tgl(), akurasi, xp: xp + bonus }
-      d.terakhir = { skill: id }
+      if (o.harian) { d.harian = d.harian || {}; d.harian[id] = d.harian[id] || {}; d.harian[id][G.tgl()] = Math.max(d.harian[id][G.tgl()] || 0, akurasi) }
+      else { d.pelajaran[k] = { tgl: G.tgl(), akurasi, xp: xp + bonus }; d.terakhir = { skill: id } }
       G.simpan()
       G.tambahXP(xp + bonus)
-      const lanjut = G.berikut(id)
+      const lanjut = o.harian ? null : G.berikut(id)
       el.innerHTML = `<div class="pemain beres-layar" style="--garis:${warna}"><main class="pm-isi"><div class="beres">
         <div class="beres-cap">${ikon('cek', 34)}</div>
-        <h1>Pelajaran beres!</h1><p class="redup">${esc(p.judul)}</p>
+        <h1>${o.harian ? 'Kuis harian beres!' : 'Pelajaran beres!'}</h1><p class="redup">${esc(p.judul)}${o.harian ? ' · balik besok buat soal baru' : ''}</p>
         <div class="tiket kecil-tiket" style="--garis:${warna}"><div class="tiket-kiri"><span class="kode" style="background:${warna}">${id}</span></div><div class="tiket-isi"><div class="statistik">
           <div><small>XP</small><b>+${xp + bonus}</b></div><div><small>Akurasi</small><b>${akurasi}%</b></div><div><small>Waktu</small><b>${Math.floor(detik / 60)}:${String(detik % 60).padStart(2, '0')}</b></div>
         </div>${bonus ? '<p class="kecil redup">Termasuk bonus +15 pelajaran pertama kali.</p>' : ''}</div></div>
