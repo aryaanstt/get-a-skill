@@ -1,0 +1,223 @@
+<title>Tutor IELTS</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&family=Inter:wght@400;500;600&display=swap">
+<style>
+/* Layout: satu kolom terpusat, tab di atas, kartu kerja di tengah */
+:root {
+  --bg: #f5f6f8; --panel: #ffffff; --panel-2: #eef0f4; --line: #dfe3ea; --fg: #17191e; --muted: #626a78;
+  --accent: #3b5bdb; --accent-soft: #3b5bdb17; --ok: #2b8a3e; --ok-soft: #2b8a3e17; --warn: #c27c0e; --warn-soft: #f2b70a2b; --bad: #c92a2a; --bad-soft: #c92a2a14;
+  --display: "Space Grotesk", "Segoe UI", system-ui, sans-serif; --body: "Inter", "Segoe UI", system-ui, sans-serif;
+}
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+  --bg: #101216; --panel: #181b21; --panel-2: #20242c; --line: #2d323c; --fg: #e8eaee; --muted: #9aa3b2;
+  --accent: #7c95ff; --accent-soft: #7c95ff22; --ok: #51cf66; --ok-soft: #51cf661f; --warn: #fcc419; --warn-soft: #fcc41929; --bad: #ff8787; --bad-soft: #ff87871c; color-scheme: dark } }
+:root[data-theme="dark"] {
+  --bg: #101216; --panel: #181b21; --panel-2: #20242c; --line: #2d323c; --fg: #e8eaee; --muted: #9aa3b2;
+  --accent: #7c95ff; --accent-soft: #7c95ff22; --ok: #51cf66; --ok-soft: #51cf661f; --warn: #fcc419; --warn-soft: #fcc41929; --bad: #ff8787; --bad-soft: #ff87871c; color-scheme: dark }
+body { background: var(--bg); color: var(--fg); font-family: var(--body); font-size: 15px; line-height: 1.55; }
+.wrap { max-width: 860px; margin: 0 auto; padding-block: 20px 48px; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); display: flex; flex-direction: column; gap: 16px; }
+h1 { font-family: var(--display); font-size: clamp(24px, 4vw, 32px); margin: 0; letter-spacing: -.01em; text-wrap: balance; }
+h2 { font-family: var(--display); font-size: 18px; margin: 0; }
+.muted { color: var(--muted); }
+.kartu { background: var(--panel); border: 1px solid var(--line); border-radius: 14px; padding: 16px; display: flex; flex-direction: column; gap: 12px; min-width: 0; }
+.tabs { display: flex; gap: 6px; flex-wrap: wrap; }
+.tabs button, .btn { font: inherit; font-weight: 600; font-size: 14px; border-radius: 10px; border: 1px solid var(--line); background: var(--panel); color: var(--fg); padding: 9px 14px; cursor: pointer; }
+.tabs button[aria-selected="true"] { background: var(--accent); color: #fff; border-color: transparent; }
+.btn.utama { background: var(--accent); color: #fff; border-color: transparent; }
+.btn:disabled { opacity: .5; cursor: not-allowed; }
+.btn:focus-visible, .tabs button:focus-visible, textarea:focus-visible, select:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.baris { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+.spasi { flex: 1; }
+textarea, select { width: 100%; box-sizing: border-box; font: inherit; color: var(--fg); background: var(--panel); border: 1px solid var(--line); border-radius: 10px; padding: 10px 12px; }
+.chat { display: flex; flex-direction: column; gap: 10px; max-height: 52vh; overflow-y: auto; }
+.bubble { padding: 10px 12px; border-radius: 12px; max-width: 85%; white-space: pre-wrap; }
+.bubble.ex { background: var(--panel-2); align-self: flex-start; }
+.bubble.me { background: var(--accent-soft); align-self: flex-end; }
+.label { font-size: 11px; font-weight: 700; letter-spacing: .07em; text-transform: uppercase; color: var(--muted); }
+.mic { width: 52px; height: 52px; border-radius: 50%; font-size: 22px; padding: 0; }
+.mic.on { background: var(--bad); color: #fff; border-color: transparent; animation: denyut 1.2s infinite; }
+@keyframes denyut { 50% { box-shadow: 0 0 0 8px var(--bad-soft); } }
+@media (prefers-reduced-motion: reduce) { .mic.on { animation: none; } }
+.skor { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 10px; }
+.skor div { background: var(--panel-2); border-radius: 10px; padding: 10px 12px; }
+.skor b { font-family: var(--display); font-size: 26px; display: block; font-variant-numeric: tabular-nums; }
+.band { font-family: var(--display); font-size: 54px; font-weight: 700; line-height: 1; }
+.esai { white-space: pre-wrap; line-height: 1.8; }
+mark { background: var(--warn-soft); color: inherit; border-bottom: 2px solid var(--warn); cursor: pointer; border-radius: 3px; padding: 0 1px; }
+mark.aktif { background: var(--accent-soft); border-color: var(--accent); }
+.catatan { border-left: 3px solid var(--accent); padding: 8px 12px; background: var(--panel-2); border-radius: 0 10px 10px 0; }
+.status { font-size: 13px; color: var(--muted); }
+.tag { font-size: 12px; font-weight: 600; padding: 2px 8px; border-radius: 99px; background: var(--accent-soft); color: var(--accent); }
+ul { margin: 0; padding-left: 20px; }
+</style>
+
+<div class="wrap">
+  <div class="baris"><div><div class="label">Get a Skill · IELTS</div><h1>Tutor IELTS</h1></div><span class="spasi"></span><a class="btn" href="https://aryaanstt.github.io/get-a-skill/ielts.html" target="_blank" rel="noopener">Mock test ›</a></div>
+  <div class="tabs" role="tablist">
+    <button role="tab" id="tab-speaking" aria-selected="true">🎙️ Speaking Room</button>
+    <button role="tab" id="tab-writing" aria-selected="false">✍️ Cek Writing</button>
+    <button role="tab" id="tab-tanya" aria-selected="false">💬 Tanya Tutor</button>
+  </div>
+  <div id="ai-mati" class="kartu" hidden><b>Tutor AI belum bisa dipakai di sini.</b><span class="muted">Buka halaman ini di claude.ai (browser Chrome atau aplikasi Claude desktop) dan izinkan halaman pakai Claude waktu ditanya.</span></div>
+
+  <section id="panel-speaking" class="kartu">
+    <div class="baris"><h2>Ngobrol sama AI examiner</h2><span class="spasi"></span><select id="sp-part" style="width:auto"><option value="full">Full test (Part 1, 2, 3)</option><option value="1">Part 1 aja</option><option value="2">Part 2 aja</option><option value="3">Part 3 aja</option></select><button class="btn utama" id="sp-mulai">Mulai</button></div>
+    <p class="muted" style="margin:0">Examiner nanya dan ngomong pakai suara. Jawab pakai mic atau ketik. Pertanyaan berikutnya nyambung sama jawaban lu, kayak ujian asli. Pas selesai, pencet <b>Nilai</b>.</p>
+    <div class="chat" id="sp-chat"></div>
+    <div class="baris"><button class="btn mic" id="sp-mic" title="Ngomong" aria-label="Ngomong">🎙️</button><textarea id="sp-teks" rows="2" placeholder="Jawaban lu (dari mic atau ketik)" style="flex:1;min-width:200px"></textarea><button class="btn utama" id="sp-kirim" disabled>Kirim</button></div>
+    <div class="baris"><span class="status" id="sp-status">Pilih bagian, terus pencet Mulai.</span><span class="spasi"></span><button class="btn" id="sp-nilai" disabled>Nilai</button></div>
+    <div id="sp-hasil"></div>
+  </section>
+
+  <section id="panel-writing" class="kartu" hidden>
+    <h2>Cek Writing</h2>
+    <div class="baris"><select id="wr-task" style="width:auto"><option value="Task 2">Task 2 (essay)</option><option value="Task 1">Task 1 (chart/graph)</option></select><span class="muted" style="font-size:13px">Tempel soal di baris pertama kalau ada, terus esai lu.</span></div>
+    <textarea id="wr-teks" rows="12" placeholder="Soal: ...&#10;&#10;Tempel esai lu di sini (bisa dari tombol Salin di Get a Skill)."></textarea>
+    <div class="baris"><span class="status" id="wr-hitung">0 kata</span><span class="spasi"></span><button class="btn utama" id="wr-nilai">Nilai esai</button></div>
+    <div id="wr-hasil"></div>
+  </section>
+
+  <section id="panel-tanya" class="kartu" hidden>
+    <h2>Tanya Tutor</h2>
+    <p class="muted" style="margin:0">Tanya apa aja soal IELTS: grammar, kosakata, strategi Reading, contoh jawaban Speaking. Jawabannya pakai bahasa santai.</p>
+    <div class="chat" id="tq-chat"></div>
+    <div class="baris"><textarea id="tq-teks" rows="2" placeholder="Contoh: bedanya 'affect' sama 'effect' apa?" style="flex:1;min-width:200px"></textarea><button class="btn utama" id="tq-kirim">Kirim</button></div>
+  </section>
+</div>
+
+<script>
+(() => {
+  const $ = id => document.getElementById(id)
+  const esc = s => String(s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]))
+  let sample = null, tts = null, dikte = null
+  const pakai = async () => {
+    try { sample = await claude.use('sample') } catch { sample = null }
+    try { tts = await claude.use('tts') } catch { tts = null }
+    try { dikte = await claude.use('dictation') } catch { dikte = null }
+    if (!sample) $('ai-mati').hidden = false
+    if (!dikte) { $('sp-mic').hidden = true }
+  }
+  if (window.claude && claude.use) pakai(); else $('ai-mati').hidden = false
+
+  // ---------- tab ----------
+  const TABS = ['speaking', 'writing', 'tanya']
+  const pilihTab = t => TABS.forEach(x => { $('tab-' + x).setAttribute('aria-selected', x === t); $('panel-' + x).hidden = x !== t })
+  TABS.forEach(t => $('tab-' + t).onclick = () => { pilihTab(t); try { localStorage.setItem('tutor-tab', t) } catch {} })
+  try { const t = localStorage.getItem('tutor-tab'); if (TABS.includes(t)) pilihTab(t) } catch {}
+
+  const gagal = (el, e) => { el.textContent = e && e.code === 'not_granted' ? 'Tutor butuh izin pakai Claude. Muat ulang halaman, terus pencet Izinkan.' : e && e.code === 'rate_limited' ? 'Lagi kebanyakan permintaan, tunggu sebentar terus coba lagi.' : 'Gagal nyambung ke Claude. Coba lagi.' }
+  const ngomong = async teks => { if (!tts) return; try { await tts.speak(teks, { voice: 'rounded', language: 'en', rate: 0.95 }) } catch {} }
+
+  // ---------- Speaking ----------
+  let riwayat = [], bagian = 'full', berjalan = false
+  const chat = $('sp-chat'), status = $('sp-status')
+  const tambah = (siapa, teks) => { const d = document.createElement('div'); d.className = 'bubble ' + (siapa === 'ex' ? 'ex' : 'me'); d.textContent = teks; chat.appendChild(d); chat.scrollTop = chat.scrollHeight }
+  const ATURAN = p => `You are a friendly but professional IELTS Speaking examiner. Run ${p === 'full' ? 'a full test: Part 1 (4 short questions about familiar topics), then Part 2 (give one cue card with a topic and 3-4 bullet points, tell the candidate they have one minute to prepare and should speak for up to two minutes), then Part 3 (3 deeper discussion questions linked to the Part 2 topic)' : `only Part ${p} of the test`}. Ask ONE question at a time. Follow up naturally on what the candidate said, like a real examiner. Never give feedback or scores during the test. When the test is complete, thank the candidate and say the test is over.
+Reply ONLY with JSON: {"say": "what you say to the candidate", "part": 1|2|3, "done": true|false}`
+  const giliranExaminer = async () => {
+    status.textContent = 'Examiner lagi mikir…'; $('sp-kirim').disabled = true
+    try {
+      const msgs = [{ role: 'user', content: ATURAN(bagian) + '\n\nThe test starts now. Greet the candidate briefly and ask the first question.' }, ...riwayat]
+      if (msgs[msgs.length - 1].role !== 'user') msgs.push({ role: 'user', content: '(continue)' })
+      const r = await sample.json(msgs, { modelTier: 'quick', cache: false })
+      riwayat.push({ role: 'assistant', content: JSON.stringify(r) })
+      tambah('ex', r.say)
+      status.textContent = `Part ${r.part || '?'} · ${r.done ? 'Tes selesai. Pencet Nilai.' : 'Giliran lu jawab.'}`
+      $('sp-nilai').disabled = riwayat.filter(m => m.role === 'user').length < 1
+      if (r.done) { berjalan = false } else { $('sp-kirim').disabled = false }
+      await ngomong(r.say)
+    } catch (e) { gagal(status, e); $('sp-kirim').disabled = false }
+  }
+  $('sp-mulai').onclick = async () => {
+    if (!sample) return
+    riwayat = []; chat.innerHTML = ''; $('sp-hasil').innerHTML = ''; bagian = $('sp-part').value; berjalan = true
+    await giliranExaminer()
+  }
+  $('sp-kirim').onclick = async () => {
+    const t = $('sp-teks').value.trim(); if (!t || !berjalan) return
+    if (dikte && $('sp-mic').classList.contains('on')) { try { await dikte.stop() } catch {} }
+    tambah('me', t); riwayat.push({ role: 'user', content: t }); $('sp-teks').value = ''
+    await giliranExaminer()
+  }
+  let finalTeks = ''
+  $('sp-mic').onclick = () => {
+    if (!dikte) return
+    const b = $('sp-mic')
+    if (b.classList.contains('on')) { dikte.stop().catch(() => {}); return }
+    if (tts) try { tts.stop() } catch {}
+    finalTeks = $('sp-teks').value ? $('sp-teks').value + ' ' : ''
+    dikte.start().catch(e => { status.textContent = e && e.code === 'not_granted' ? 'Mic ga diizinin. Ketik aja jawabannya.' : 'Mic gagal nyala, coba lagi.' })
+  }
+  const pasangDikte = () => {
+    if (!dikte) return
+    dikte.onPartial(({ text }) => { $('sp-teks').value = finalTeks + text })
+    dikte.onFinal(({ text }) => { finalTeks += text + ' '; $('sp-teks').value = finalTeks })
+    dikte.onState(({ state }) => { $('sp-mic').classList.toggle('on', state === 'listening'); if (state === 'listening') status.textContent = '🎙️ Lagi dengerin… pencet mic lagi buat berhenti.' })
+  }
+  setTimeout(() => pasangDikte(), 0)
+  const tunggu = setInterval(() => { if (dikte) { pasangDikte(); clearInterval(tunggu) } }, 500)
+  setTimeout(() => clearInterval(tunggu), 12000)
+
+  $('sp-nilai').onclick = async () => {
+    const transkrip = riwayat.map(m => m.role === 'user' ? 'Candidate: ' + m.content : 'Examiner: ' + (JSON.parse(m.content).say || '')).join('\n')
+    if (!transkrip.includes('Candidate:')) return
+    const out = $('sp-hasil'); out.innerHTML = '<p class="status">Lagi dinilai… biasanya 20 sampai 60 detik.</p>'
+    try {
+      const r = await sample.json(`You are an experienced IELTS Speaking examiner. Assess the candidate in this transcript using the official band descriptors. The transcript comes from speech recognition, so ignore small transcription errors, and estimate pronunciation only from what the text suggests (say so). Write feedback in casual Indonesian (gua/lu style) but keep quoted phrases and improved versions in English.
+Transcript:
+${transkrip}
+
+Reply ONLY with JSON: {"overall": number (half bands), "fluency": number, "lexical": number, "grammar": number, "pronunciation": number, "summary": "2-3 sentences in Indonesian", "strengths": ["..."], "fixes": [{"quote": "exact words the candidate said", "issue": "what is wrong, Indonesian", "better": "improved English version"}], "vocab": ["5 useful words or phrases for these topics with a short Indonesian meaning"], "model_answer": "one improved answer (English) to one of the questions, about 80 words"}`, { modelTier: 'default', cache: false })
+      out.innerHTML = laporanSpeaking(r)
+    } catch (e) { gagal(out, e) }
+  }
+  const laporanSpeaking = r => `<div class="kartu" style="background:var(--panel-2)"><div class="baris"><div><div class="label">Estimasi band</div><div class="band">${esc(r.overall)}</div></div><span class="spasi"></span><span class="muted" style="max-width:440px">${esc(r.summary || '')}</span></div><div class="skor">${[['Fluency & Coherence', r.fluency], ['Lexical Resource', r.lexical], ['Grammar', r.grammar], ['Pronunciation*', r.pronunciation]].map(([n, v]) => `<div><span class="muted" style="font-size:13px">${n}</span><b>${esc(v)}</b></div>`).join('')}</div><p class="muted" style="font-size:12px;margin:0">*Pronunciation diperkirain dari transkrip, bukan dari suara asli.</p>${(r.strengths || []).length ? `<div><b>Udah bagus</b><ul>${r.strengths.map(s => `<li>${esc(s)}</li>`).join('')}</ul></div>` : ''}${(r.fixes || []).length ? `<div><b>Perbaiki ini</b>${r.fixes.map(f => `<div class="catatan" style="margin-top:8px"><div>“${esc(f.quote)}”</div><div class="muted">${esc(f.issue)}</div><div>✅ ${esc(f.better)}</div></div>`).join('')}</div>` : ''}${(r.vocab || []).length ? `<div><b>Kosakata buat dipakai</b><ul>${r.vocab.map(v => `<li>${esc(v)}</li>`).join('')}</ul></div>` : ''}${r.model_answer ? `<div><b>Contoh jawaban yang lebih bagus</b><p class="catatan">${esc(r.model_answer)}</p></div>` : ''}</div>`
+
+  // ---------- Writing ----------
+  const hitungKata = t => (t.match(/[A-Za-z’']+/g) || []).length
+  $('wr-teks').oninput = () => { $('wr-hitung').textContent = hitungKata($('wr-teks').value) + ' kata' }
+  $('wr-nilai').onclick = async () => {
+    const teks = $('wr-teks').value.trim(); const out = $('wr-hasil')
+    if (!sample) { $('ai-mati').hidden = false; return }
+    if (hitungKata(teks) < 40) { out.innerHTML = '<p class="status">Esainya kependekan buat dinilai.</p>'; return }
+    out.innerHTML = '<p class="status">Lagi dinilai… biasanya 20 sampai 60 detik.</p>'
+    const task = $('wr-task').value
+    try {
+      const r = await sample.json(`You are an experienced IELTS Writing examiner. Assess this Academic Writing ${task} with the official band descriptors (${task === 'Task 1' ? 'Task Achievement' : 'Task Response'}, Coherence and Cohesion, Lexical Resource, Grammatical Range and Accuracy). If the prompt is included, judge against it. Feedback in casual Indonesian (gua/lu style); quotes and corrections in English. Each "quote" must be copied EXACTLY from the essay (a short phrase or sentence) so it can be highlighted.
+Text:
+${teks}
+
+Reply ONLY with JSON: {"overall": number, "ta": number, "cc": number, "lr": number, "gra": number, "summary": "2-3 sentences Indonesian", "issues": [{"quote": "exact text from essay", "criterion": "TA|CC|LR|GRA", "issue": "Indonesian explanation", "better": "corrected English"}], "next_steps": ["3 concrete things to practise, Indonesian"]}`, { modelTier: 'default', cache: false })
+      out.innerHTML = laporanWriting(teks, r)
+      out.querySelectorAll('mark').forEach(m => m.onclick = () => {
+        out.querySelectorAll('mark').forEach(x => x.classList.remove('aktif')); m.classList.add('aktif')
+        const c = out.querySelector('#wr-catatan-' + m.dataset.i); if (c) c.scrollIntoView({ behavior: 'smooth', block: 'nearest' })
+      })
+    } catch (e) { gagal(out, e) }
+  }
+  const laporanWriting = (teks, r) => {
+    let html = esc(teks)
+    ;(r.issues || []).forEach((it, i) => { const q = esc(it.quote || ''); if (q && html.includes(q)) html = html.replace(q, `<mark data-i="${i}" title="${esc(it.criterion)}">${q}</mark>`) })
+    return `<div class="kartu" style="background:var(--panel-2)"><div class="baris"><div><div class="label">Estimasi band</div><div class="band">${esc(r.overall)}</div></div><span class="spasi"></span><span class="muted" style="max-width:440px">${esc(r.summary || '')}</span></div><div class="skor">${[[$('wr-task').value === 'Task 1' ? 'Task Achievement' : 'Task Response', r.ta], ['Coherence & Cohesion', r.cc], ['Lexical Resource', r.lr], ['Grammar', r.gra]].map(([n, v]) => `<div><span class="muted" style="font-size:13px">${n}</span><b>${esc(v)}</b></div>`).join('')}</div><div><b>Esai lu</b> <span class="muted" style="font-size:13px">(klik bagian yang disorot)</span><div class="esai">${html}</div></div><div>${(r.issues || []).map((it, i) => `<div class="catatan" id="wr-catatan-${i}" style="margin-top:8px"><span class="tag">${esc(it.criterion)}</span> “${esc(it.quote)}”<div class="muted">${esc(it.issue)}</div><div>✅ ${esc(it.better)}</div></div>`).join('')}</div>${(r.next_steps || []).length ? `<div><b>Latihan berikutnya</b><ul>${r.next_steps.map(s => `<li>${esc(s)}</li>`).join('')}</ul></div>` : ''}</div>`
+  }
+
+  // ---------- Tanya ----------
+  let tq = []
+  $('tq-kirim').onclick = async () => {
+    const t = $('tq-teks').value.trim(); if (!t || !sample) { if (!sample) $('ai-mati').hidden = false; return }
+    $('tq-teks').value = ''
+    const me = document.createElement('div'); me.className = 'bubble me'; me.textContent = t; $('tq-chat').appendChild(me)
+    const ai = document.createElement('div'); ai.className = 'bubble ex'; ai.textContent = 'Mikir…'; $('tq-chat').appendChild(ai)
+    tq.push({ role: 'user', content: t })
+    const pengantar = { role: 'user', content: 'You are a patient IELTS tutor for an Indonesian fresh graduate (meteorology, aiming for band 6.5-7). Answer in casual Indonesian (gua/lu), short and practical, with English examples. Do not write full essays for them; guide them to do it themselves.' }
+    const ack = { role: 'assistant', content: 'Siap, gua bantu.' }
+    try {
+      const r = await sample([pengantar, ack, ...tq.slice(-12)], { modelTier: 'quick', cache: false, onText: ({ text }) => { ai.textContent = text; $('tq-chat').scrollTop = $('tq-chat').scrollHeight } })
+      ai.textContent = r.text; tq.push({ role: 'assistant', content: r.text })
+    } catch (e) { gagal(ai, e); tq.pop() }
+  }
+  $('tq-teks').onkeydown = e => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); $('tq-kirim').click() } }
+  $('sp-teks').onkeydown = e => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); $('sp-kirim').click() } }
+})()
+</script>
