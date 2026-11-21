@@ -16,21 +16,21 @@
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme="light"]) {
     --merek: #FFB224;
-    --bg: #0B0F17; --panel: #121826; --panel-2: #182032; --ink: #E8ECF3; --ink-2: #C7CEDA; --redup: #8E98AA;
-    --garis-ui: #232C3E; --garis-kuat: #36425C; --titik: rgba(232, 236, 243, .055);
+    --bg: #111110; --panel: #1A1A19; --panel-2: #21211F; --ink: #EDEDEA; --ink-2: #CFCFCA; --redup: #9A9A94;
+    --garis-ui: #2B2B29; --garis-kuat: #3C3C39; --titik: transparent;
     --amber-ink: #FFD27A; --amber-bg: rgba(255, 178, 36, .13);
     --ok: #3DD68C; --ok-bg: rgba(61, 214, 140, .12); --bad: #FF7A70; --bad-bg: rgba(255, 122, 112, .12);
-    --siap: #64748B; --bayang: 0 1px 0 rgba(0, 0, 0, .3); --angkat: 0 18px 40px -18px rgba(0, 0, 0, .7);
+    --siap: #6B6B66; --bayang: 0 1px 0 rgba(0, 0, 0, .3); --angkat: 0 18px 40px -18px rgba(0, 0, 0, .7);
     color-scheme: dark;
   }
 }
 :root[data-theme="dark"] {
   --merek: #FFB224;
-  --bg: #0B0F17; --panel: #121826; --panel-2: #182032; --ink: #E8ECF3; --ink-2: #C7CEDA; --redup: #8E98AA;
-  --garis-ui: #232C3E; --garis-kuat: #36425C; --titik: rgba(232, 236, 243, .055);
+  --bg: #111110; --panel: #1A1A19; --panel-2: #21211F; --ink: #EDEDEA; --ink-2: #CFCFCA; --redup: #9A9A94;
+  --garis-ui: #2B2B29; --garis-kuat: #3C3C39; --titik: transparent;
   --amber-ink: #FFD27A; --amber-bg: rgba(255, 178, 36, .13);
   --ok: #3DD68C; --ok-bg: rgba(61, 214, 140, .12); --bad: #FF7A70; --bad-bg: rgba(255, 122, 112, .12);
-  --siap: #64748B; --bayang: 0 1px 0 rgba(0, 0, 0, .3); --angkat: 0 18px 40px -18px rgba(0, 0, 0, .7);
+  --siap: #6B6B66; --bayang: 0 1px 0 rgba(0, 0, 0, .3); --angkat: 0 18px 40px -18px rgba(0, 0, 0, .7);
   color-scheme: dark;
 }
 
@@ -139,7 +139,7 @@ code { font-family: var(--f-kode); font-size: .88em; background: var(--panel-2);
 .harian-list a span { flex: 1 }
 .harian-list b { font-size: 12.5px; color: var(--redup) }
 .harian-list b.udah { color: var(--ok) }
-/* header atas khusus HP (di laptop logo ada di sidebar) */
+/* header atas khusus HP (di laptop menunya jadi header atas) */
 .atas-hp { display: none; align-items: center; gap: 8px; padding: 2px 0 14px; margin-bottom: 6px; border-bottom: 1px solid var(--garis-ui) }
 .atas-hp .spasi { flex: 1 }
 .atas-hp .logo { padding: 0 }
@@ -826,4 +826,17 @@ table.hasil th, table.hasil td { padding: 7px 11px; border-bottom: 1px solid var
 
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important }
+}
+
+/* ---------- header atas di laptop (disamain sama keluarga get it, 21 Nov 2026) ---------- */
+@media (min-width: 861px) {
+  .app { display: block }
+  .rel { position: sticky; top: 0; height: auto; flex-direction: row; align-items: center; gap: 22px; padding: 12px max(24px, calc((100vw - 1220px) / 2 + 44px)); border-right: 0; border-bottom: 1px solid var(--garis-ui); background: color-mix(in srgb, var(--bg) 90%, transparent) }
+  .rel .logo { padding: 0 }
+  .rel-menu { display: flex; gap: 4px }
+  .rel-menu a { padding: 8px 14px; border-radius: 99px; gap: 8px; font-size: 14px }
+  .rel-menu a svg { width: 18px; height: 18px }
+  .rel-masukan { margin-left: auto }
+  .rel-bawah { margin-top: 0; gap: 14px; padding: 0 }
+  .isi { margin: 0 auto }
 }
