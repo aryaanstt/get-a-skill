@@ -102,6 +102,19 @@ window.GAS_EXCEL = (() => {
     },
     MATCH: ([cari, r]) => { const i = datar(r).findIndex(x => String(x).toLowerCase() === String(cari).toLowerCase()); if (i < 0) throw new GalatRumus('#N/A'); return i + 1 },
     INDEX: ([r, b, k]) => { const rows = Array.isArray(r[0]) ? r : r.map(x => [x]); return rows[angka(b) - 1]?.[angka(k ?? 1) - 1] },
+    AVERAGEIFS: ([s, ...rest]) => { const S = datar(s), ps = pasanganKriteria(rest, 0); const v = S.filter((_, i) => lolosSemua(ps, i)).map(angka); if (!v.length) throw new GalatRumus('#DIV/0! (ga ada yang lolos syarat)'); return v.reduce((a, b) => a + b, 0) / v.length },
+    MAXIFS: ([s, ...rest]) => { const S = datar(s), ps = pasanganKriteria(rest, 0); const v = S.filter((_, i) => lolosSemua(ps, i)).map(angka); return v.length ? Math.max(...v) : 0 },
+    MINIFS: ([s, ...rest]) => { const S = datar(s), ps = pasanganKriteria(rest, 0); const v = S.filter((_, i) => lolosSemua(ps, i)).map(angka); return v.length ? Math.min(...v) : 0 },
+    MEDIAN: a => { const n = angkaDari(a).sort((x, y) => x - y); if (!n.length) throw new GalatRumus('#NUM!'); const m = Math.floor(n.length / 2); return n.length % 2 ? n[m] : (n[m - 1] + n[m]) / 2 },
+    LARGE: ([r, k]) => { const n = angkaDari(r).sort((x, y) => y - x); const v = n[angka(k) - 1]; if (v === undefined) throw new GalatRumus('#NUM!'); return v },
+    SMALL: ([r, k]) => { const n = angkaDari(r).sort((x, y) => x - y); const v = n[angka(k) - 1]; if (v === undefined) throw new GalatRumus('#NUM!'); return v },
+    SUMPRODUCT: a => { const L = a.map(datar); return L[0].reduce((t, _, i) => t + L.reduce((p, l) => p * angka(l[i]), 1), 0) },
+    SUBSTITUTE: ([s, lama, baru]) => String(s).split(String(lama)).join(String(baru)),
+    FIND: ([cari, s]) => { const i = String(s).indexOf(String(cari)); if (i < 0) throw new GalatRumus('#VALUE! (ga ketemu)'); return i + 1 },
+    SEARCH: ([cari, s]) => { const i = String(s).toLowerCase().indexOf(String(cari).toLowerCase()); if (i < 0) throw new GalatRumus('#VALUE! (ga ketemu)'); return i + 1 },
+    VALUE: ([s]) => { const v = Number(String(s).replace(/\./g, '').replace(',', '.')); if (isNaN(v)) throw new GalatRumus('#VALUE!'); return v },
+    INT: ([x]) => Math.floor(angka(x)), MOD: ([x, y]) => { const b = angka(y); if (!b) throw new GalatRumus('#DIV/0!'); return ((angka(x) % b) + b) % b },
+    IFS: a => { for (let i = 0; i < a.length; i += 2) if (a[i]) return a[i + 1]; throw new GalatRumus('#N/A (ga ada syarat yang terpenuhi)') },
   }
   // Fungsi yang argumennya boleh error (dievaluasi pelan-pelan).
   const MALAS = { IF: true, IFERROR: true }
@@ -151,5 +164,22 @@ window.GAS_EXCEL = (() => {
   const tampil = v => typeof v === 'number' ? (Number.isInteger(v) ? v.toLocaleString('id-ID') : v.toLocaleString('id-ID', { maximumFractionDigits: 2 })) : typeof v === 'boolean' ? (v ? 'TRUE' : 'FALSE') : String(v ?? '')
   const sama = (a, b) => typeof a === 'number' && typeof b === 'number' ? Math.abs(a - b) < 1e-6 : String(a).toLowerCase() === String(b).toLowerCase()
 
-  return { hitung, tampil, sama, urai, idxKeKolom, GalatRumus, FUNGSI: Object.keys(FUNGSI) }
+  // Buat pembahasan: pohon rumus, nilai tiap bagian, dan teks balik dari pohon.
+  const pohon = rumus => parse(tokenisasi(String(rumus).trim().replace(/^=/, '')))
+  const nilaiNode = (node, data) => buatEvaluator((r, c) => data[r]?.[c])(node)
+  const PRIO = { '=': 1, '<>': 1, '<': 1, '>': 1, '<=': 1, '>=': 1, '&': 2, '+': 3, '-': 3, '*': 4, '/': 4, '^': 5 }
+  const teks = (n, induk = 0) => {
+    switch (n.t) {
+      case 'lit': return typeof n.v === 'string' ? `"${n.v}"` : typeof n.v === 'boolean' ? (n.v ? 'TRUE' : 'FALSE') : String(n.v)
+      case 'ref': case 'range': return n.v
+      case 'neg': return '-' + teks(n.a, 9)
+      case 'fn': return `${n.v}(${n.args.map(a => teks(a)).join(',')})`
+      case 'bin': { const p = PRIO[n.op], s = `${teks(n.a, p)}${n.op}${teks(n.b, p + 1)}`; return p < induk ? `(${s})` : s }
+    }
+    return ''
+  }
+  // Geser alamat relatif sebanyak k baris (kayak nyalin rumus ke bawah). Alamat yang dikunci $ ga ikut geser.
+  const geser = (rumus, k) => String(rumus).split('"').map((seg, i) => i % 2 ? seg : seg.replace(/(\$?)([A-Za-z]{1,3})(\$?)(\d+)(?![\d(])/g, (m, d1, col, d2, row) => d2 ? m : d1 + col + d2 + (Number(row) + k))).join('"')
+
+  return { hitung, tampil, sama, urai, idxKeKolom, GalatRumus, FUNGSI: Object.keys(FUNGSI), pohon, nilaiNode, teks, geser }
 })()

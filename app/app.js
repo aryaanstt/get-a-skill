@@ -14,7 +14,7 @@
   const DINILAI = ['pilih', 'banyak', 'angka', 'pasang', 'urut', 'skenario', 'isian', 'slider', 'sql', 'excel']
   const benih = s => { let h = 2166136261; for (const c of s) { h ^= c.charCodeAt(0); h = Math.imul(h, 16777619) } return h >>> 0 }
   const acakBenih = (arr, seed) => { const a = arr.slice(); let x = seed || 1; const r = () => { x = (x + 0x6D2B79F5) | 0; let t = Math.imul(x ^ (x >>> 15), 1 | x); t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t; return ((t ^ (t >>> 14)) >>> 0) / 4294967296 }; for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(r() * (i + 1)); [a[i], a[j]] = [a[j], a[i]] } return a }
-  const kolamHarian = id => { const K = G.kursus(id); if (!K) return []; return [...(K.tes || []).map(t => ({ t: 'pilih', tanya: t.tanya, opsi: t.opsi, benar: t.benar, jelas: 'Soal dari bank tes ' + KAT.skill[id].pendek + '.' })), ...(K.harian || []), ...K.pelajaran.flatMap(p => p.langkah.filter(l => DINILAI.includes(l.t)))] }
+  const kolamHarian = id => { const K = G.kursus(id); if (!K) return []; return [...(K.tes || []).map(t => ({ t: 'pilih', tanya: t.tanya, opsi: t.opsi, benar: t.benar, jelas: t.jelas || 'Soal dari bank tes ' + KAT.skill[id].pendek + '.' })), ...(K.harian || []), ...K.pelajaran.flatMap(p => p.langkah.filter(l => DINILAI.includes(l.t) && !l.bimbing))] }
   const hariKe = t => Math.floor(Date.parse(t + 'T00:00:00Z') / 864e5)
   const soalHarian = (id, t = G.tgl()) => { const k = acakBenih(kolamHarian(id), benih(id)); if (!k.length) return []; const d = hariKe(t); return Array.from({ length: Math.min(5, k.length) }, (_, i) => k[(d * 5 + i) % k.length]) }
   const skorHarian = (id, t = G.tgl()) => ((G.D().harian || {})[id] || {})[t]
@@ -119,7 +119,7 @@
       <footer class="lnd-kaki"><span>${logo()} <a class="redup kecil bagian-dari" href="../../get-it/">bagian dari <b>get it</b></a></span><span class="redup kecil">${G.akun.awan() ? 'Satu akun buat semua perangkat. Progres disimpan di server.' : 'Mode lokal: akun dan progres cuma di perangkat ini.'}</span></footer>
     </div>`)
     GAS_PETA.gambar(document.getElementById('peta-hero'), { lines: contoh, kereta: !G.reduksi(), ringkas: true, legenda: true, minSkala: .62, klik: () => go('#daftar') })
-    GAS_PEMUTAR.demo(document.getElementById('demo'), window.GAS_KURSUS.EX.pelajaran[0].langkah[2], () => G.konfeti())
+    GAS_PEMUTAR.demo(document.getElementById('demo'), window.GAS_KURSUS.EX.pelajaran[0].langkah.find(l => l.t === 'excel' && !l.bimbing), () => G.konfeti())
     hal().querySelector('.coba-tamu').onclick = () => { G.akun.tamu(); go('#mulai') }
   }
 

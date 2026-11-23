@@ -840,3 +840,139 @@ table.hasil th, table.hasil td { padding: 7px 11px; border-bottom: 1px solid var
   .rel-bawah { margin-top: 0; gap: 14px; padding: 0 }
   .isi { margin: 0 auto }
 }
+/* ---------- pelajaran v3: rute fase, pembahasan, contoh bareng, contekan ---------- */
+.pm-rute { list-style: none; display: flex; align-items: flex-start; max-width: 700px; width: calc(100% - 40px); margin: 10px auto 0; padding: 0; counter-reset: f }
+.pm-rute li { flex: 1; position: relative; display: grid; justify-items: center; gap: 5px; font: 600 10.5px/1.2 var(--f-kode); letter-spacing: .04em; text-transform: uppercase; color: var(--redup); text-align: center }
+.pm-rute li::before { content: ''; position: absolute; top: 6px; left: -50%; right: 50%; height: 4px; background: var(--garis-ui); z-index: 0 }
+.pm-rute li:first-child::before { display: none }
+.pm-rute li i { position: relative; z-index: 1; width: 16px; height: 16px; border-radius: 50%; background: var(--panel); border: 3px solid var(--garis-kuat); box-sizing: border-box; transition: .25s }
+.pm-rute li.lewat::before, .pm-rute li.ini::before { background: var(--garis) }
+.pm-rute li.lewat i { border-color: var(--garis); background: var(--garis) }
+.pm-rute li.ini i { border-color: var(--garis); background: var(--panel); box-shadow: 0 0 0 4px color-mix(in srgb, var(--garis) 22%, transparent); transform: scale(1.15) }
+.pm-rute li.ini { color: var(--ink) }
+@media (max-width: 480px) { .pm-rute li span { font-size: 9.5px } }
+
+.fase-label { margin-bottom: 8px; padding: 6px 10px; border-radius: 99px }
+.fase-label.contoh { color: var(--amber-ink); background: var(--amber-bg) }
+.fase-label.bimbing { color: var(--garis); background: color-mix(in srgb, var(--garis) 12%, transparent) }
+.tip.kecil { font-size: 14px; margin: -8px 0 14px; display: flex; gap: 8px; align-items: flex-start }
+.tip.kecil svg { flex: none; margin-top: 3px }
+
+.bahas { margin-top: 22px; border: 2px solid var(--garis-ui); border-radius: 18px; background: var(--panel); overflow: hidden; scroll-margin-top: 14px; animation: masukKecil .3s ease }
+.bahas.bad { border-color: color-mix(in srgb, var(--bad) 45%, var(--garis-ui)) }
+.bahas.ok { border-color: color-mix(in srgb, var(--ok) 40%, var(--garis-ui)) }
+.bahas > summary { display: flex; align-items: center; gap: 8px; padding: 13px 16px; cursor: pointer; font: 700 15.5px var(--f-judul); list-style: none; user-select: none }
+.bahas > summary::-webkit-details-marker { display: none }
+.bahas > summary::after { content: ''; margin-left: auto; width: 9px; height: 9px; border-right: 2px solid currentColor; border-bottom: 2px solid currentColor; transform: rotate(45deg); transition: transform .2s; opacity: .55 }
+.bahas[open] > summary::after { transform: rotate(-135deg) }
+.bahas > summary svg { color: var(--amber) }
+.bahas-isi { display: grid; gap: 14px; padding: 2px 16px 18px }
+.bahas-blok { display: grid; gap: 8px }
+.bahas-blok > ul, .bahas-blok > ol { margin: 0; padding-left: 20px }
+.bahas-blok li { margin: 3px 0 }
+.bahas-blok.diagnosa { padding: 12px 14px; border-radius: 12px; background: var(--bad-bg) }
+.bahas-blok.diagnosa .label-kecil { color: var(--bad) }
+.bahas-blok.jawab .label-kecil { color: var(--ok) }
+.bahas-blok.umum { padding: 12px 14px; border-radius: 12px; background: var(--panel-2) }
+.bahas-teks { font-size: 15px; line-height: 1.65 }
+.jawab-teks { margin: 0; padding: 11px 14px; border-radius: 12px; background: var(--ok-bg); color: var(--ink); font-weight: 650 }
+.kode-bahas, .ct-kode { margin: 0; padding: 12px 14px; border-radius: 12px; background: #0E1525; color: #E3E8F0; font: 13.5px/1.65 var(--f-kode); white-space: pre-wrap; word-break: break-word; overflow-x: auto }
+.bahas-blok .btn { justify-self: start }
+.bahas-urai { list-style: none; padding: 0 !important; margin: 0; display: grid; gap: 10px; counter-reset: u }
+.bahas-urai > li { counter-increment: u; display: grid; gap: 5px; padding: 10px 12px 10px 42px; position: relative; border: 1px solid var(--garis-ui); border-radius: 12px; font-size: 14.5px; line-height: 1.55; margin: 0 !important }
+.bahas-urai > li::before { content: counter(u); position: absolute; left: 11px; top: 10px; width: 22px; height: 22px; border-radius: 50%; display: grid; place-items: center; background: var(--garis); color: #fff; font: 700 11px var(--f-kode) }
+.bahas-urai > li > code { justify-self: start; font-size: 13px; white-space: pre-wrap; word-break: break-word }
+.bahas-urai ul { margin: 4px 0 0; padding-left: 18px; display: grid; gap: 3px }
+.bahas-urai ul li { padding: 0; border: 0; margin: 0 }
+.bahas-opsi { list-style: none; padding: 0 !important; margin: 0; display: grid; gap: 6px }
+.bahas-opsi li { display: flex; gap: 10px; align-items: flex-start; padding: 9px 12px; border-radius: 12px; border: 1px solid var(--garis-ui); font-size: 14.5px; margin: 0 !important }
+.bahas-opsi li > svg { flex: none; margin-top: 3px }
+.bahas-opsi li.b > svg { color: var(--ok) }
+.bahas-opsi li.s > svg { color: var(--bad) }
+.bahas-opsi li.dipilih { border-color: var(--garis-kuat); background: var(--panel-2) }
+.bahas-opsi small, .kunci-urut small, .pasang-kunci small { display: block; color: var(--redup); font-size: 13.5px; margin-top: 2px }
+.bahas-opsi em { font-style: normal; font-size: 12.5px; color: var(--redup) }
+.pasang-kunci td { white-space: normal !important; vertical-align: top }
+.pasang-kunci td:nth-child(2) { color: var(--redup); width: 1% }
+.urut-jalan { display: flex; flex-wrap: wrap; align-items: center; gap: 6px }
+.urut-jalan span { padding: 4px 9px; border-radius: 8px; background: var(--panel-2); border: 1px solid var(--garis-ui); font: 600 12px var(--f-kode) }
+.urut-jalan svg { color: var(--redup) }
+.rumus-bahas { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; padding: 11px 14px; border-radius: 12px; background: var(--ok-bg) }
+.rumus-bahas code { font-size: 14.5px; background: var(--panel); word-break: break-all }
+.bedah-rumus { font-size: 14.5px; line-height: 1.6; padding: 10px 12px; border: 1px solid var(--garis-ui); border-radius: 12px; overflow-x: auto }
+.bedah-rumus ul { margin: 6px 0 2px; padding-left: 18px; display: grid; gap: 4px }
+.bedah-rumus li code { word-break: break-all }
+.bedah-dalam { margin: 4px 0 2px; padding: 6px 10px; border-left: 3px solid var(--garis); background: var(--panel-2); border-radius: 0 10px 10px 0 }
+.galat-teks { color: var(--bad) }
+.xl-grid td.meleset { background: var(--bad-bg); outline-color: var(--bad) }
+.xl-grid.kecil td { padding: 5px 9px; min-width: 44px; cursor: default; font-size: 13px }
+.xl-grid.kecil td.pilih { transition: background .3s }
+
+.contekan { display: grid; gap: 0; border: 1px solid var(--garis-ui); border-radius: 16px; background: var(--panel); overflow: hidden; text-align: left }
+.ck-baris { display: grid; grid-template-columns: minmax(110px, 38%) 1fr; gap: 14px; padding: 11px 14px; border-top: 1px solid var(--garis-ui); font-size: 14.5px; align-items: start }
+.ck-baris:first-child { border-top: 0 }
+.ck-baris code { justify-self: start; white-space: pre-wrap; word-break: break-word; font-size: 13px }
+@media (max-width: 520px) { .ck-baris { grid-template-columns: 1fr; gap: 4px } }
+.ck-ulang { margin: 16px 0 0; text-align: left }
+.ck-ulang > summary { cursor: pointer; font-weight: 650; display: flex; gap: 8px; align-items: center }
+.ck-ulang .contekan { margin-top: 12px }
+
+.ct-soal { padding: 12px 15px; border-radius: 14px; background: var(--panel); border: 1px solid var(--garis-ui); font-size: 15.5px; margin-bottom: 12px }
+.ct-data { margin-bottom: 12px; border: 1px solid var(--garis-ui); border-radius: 12px; background: var(--panel) }
+.ct-langkah { list-style: none; padding: 0; margin: 0; display: grid; gap: 12px }
+.ct-item { display: grid; grid-template-columns: 30px 1fr; gap: 12px; align-items: start }
+.ct-no { width: 30px; height: 30px; border-radius: 50%; display: grid; place-items: center; background: var(--garis); color: #fff; font: 700 13px var(--f-kode); box-shadow: 0 0 0 4px color-mix(in srgb, var(--garis) 16%, transparent) }
+.ct-isi { display: grid; gap: 8px; min-width: 0; padding: 12px 14px; border-radius: 14px; background: var(--panel); border: 1px solid var(--garis-ui) }
+.ct-ket { font-size: 15px; line-height: 1.6 }
+.ct-ket p { margin: 0 0 .4em }
+.ct-kode span { display: inline }
+.ct-kode span.baru { background: rgba(255, 178, 36, .2); box-shadow: -14px 0 0 rgba(255, 178, 36, .2), 14px 0 0 rgba(255, 178, 36, .2); color: #FFD27A }
+.ct-hasil .tabel-geser { max-height: 220px }
+.ct-nilai { margin: 0; font-size: 15px }
+.ct-bawah { display: flex; gap: 10px; align-items: center; margin-top: 14px; flex-wrap: wrap }
+.ct-akhir:not(:empty) { margin-top: 16px; display: grid; gap: 12px }
+.ct-hasil-akhir { padding: 12px 15px; border-radius: 14px; background: var(--ok-bg); font-size: 15px }
+.ct-main { display: grid; gap: 8px }
+.contoh-jawab { margin: -6px 0 14px; padding: 10px 14px; border-radius: 14px; background: var(--amber-bg) }
+.contoh-jawab summary { cursor: pointer; font-weight: 650; display: flex; gap: 8px; align-items: center }
+.contoh-jawab > div { margin-top: 8px; font-size: 14.5px; line-height: 1.6 }
+
+.tes-bahas { margin: 18px 0 0; text-align: left }
+.tes-bahas > summary { cursor: pointer; font-weight: 700; display: flex; gap: 8px; align-items: center }
+.tes-bahas ol { list-style: none; padding: 0; margin: 12px 0 0; display: grid; gap: 10px }
+.tes-bahas li { padding: 11px 13px; border-radius: 12px; border: 1px solid var(--garis-ui); font-size: 14.5px }
+.tes-bahas li p { margin: 6px 0 0 }
+.tes-bahas .tb-kepala { display: flex; gap: 6px; align-items: flex-start }
+.tes-bahas .tb-kepala svg { flex: none; margin-top: 3px }
+.tes-bahas li.ok .tb-kepala svg { color: var(--ok) }
+.tes-bahas li.bad { background: var(--bad-bg); border-color: transparent }
+.tes-bahas li.bad .tb-kepala svg { color: var(--bad) }
+.demo-bahas .bahas { margin-top: 14px }
+.materi .contekan { margin: 12px 0 }
+.materi .tabel-mini { border-collapse: collapse; font-size: 14px; margin: 8px 0; width: 100% }
+.materi .tabel-mini th, .materi .tabel-mini td { border: 1px solid var(--garis-ui); padding: 6px 10px; text-align: left }
+.materi .tabel-mini th { background: var(--panel-2); font: 600 12px var(--f-kode) }
+.materi .kotak { padding: 12px 14px; border: 1px solid var(--garis-ui); border-radius: 14px; background: var(--panel); margin: 10px 0 }
+.ct-kode.teks { background: var(--panel-2); color: var(--ink); border: 1px solid var(--garis-ui); font-size: 13.5px }
+.ct-ulang { margin-top: 16px; padding: 10px 14px; border-radius: 14px; border: 1px dashed var(--garis-kuat); background: var(--panel) }
+.ct-ulang > summary { cursor: pointer; font-weight: 650; font-size: 14px; display: flex; gap: 8px; align-items: center; color: var(--ink-2) }
+.ct-ulang ol { margin: 10px 0 2px; padding-left: 20px; display: grid; gap: 8px; font-size: 14px }
+.ct-ulang li { display: grid; gap: 4px }
+.ct-ulang li code { justify-self: start; white-space: pre-wrap; word-break: break-word; font-size: 12.5px }
+.audio-kotak { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; padding: 12px 14px; margin-bottom: 12px; border-radius: 14px; background: color-mix(in srgb, var(--garis) 10%, var(--panel)); border: 1px solid color-mix(in srgb, var(--garis) 30%, var(--garis-ui)) }
+.naskah { padding: 10px 14px; border-radius: 12px; background: var(--panel-2); font-size: 14.5px; line-height: 1.6 }
+.naskah p { margin: 4px 0 }
+.bacaan { padding: 14px 16px; border-radius: 14px; background: var(--panel); border: 1px solid var(--garis-ui); font-size: 15px; line-height: 1.7; margin-bottom: 14px }
+.bacaan p { margin: 0 0 .6em }
+.ie-bahas { margin-top: 14px; text-align: left }
+.ie-bahas > summary { cursor: pointer; font-weight: 700; display: flex; gap: 8px; align-items: center }
+.ie-bahas ol { list-style: none; padding: 0; margin: 12px 0 0; display: grid; gap: 10px }
+.ie-bahas li { padding: 11px 13px; border-radius: 12px; border: 1px solid var(--garis-ui); font-size: 14.5px }
+.ie-bahas li p { margin: 6px 0 0 }
+.ie-bahas .tb-kepala { display: flex; gap: 6px; align-items: flex-start }
+.ie-bahas .tb-kepala svg { flex: none; margin-top: 3px }
+.ie-bahas li.ok .tb-kepala svg { color: var(--ok) }
+.ie-bahas li.bad { background: var(--bad-bg); border-color: transparent }
+.ie-bahas li.bad .tb-kepala svg { color: var(--bad) }
+.xl-grid td.meleset .hasil-sel { color: var(--bad) }
+.xl-grid td.beres .hasil-sel { color: var(--ok) }

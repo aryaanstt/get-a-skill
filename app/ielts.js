@@ -51,13 +51,14 @@ window.GAS_IELTS = (() => {
   }
   const nilai = (root, soal, pref) => {
     const qs = soal.filter(q => !q.tipe)
-    const rinci = qs.map(q => { const j = ambil(root, pref, q.no); return { no: q.no, j, ok: q.jawab.some(a => norm(a) === norm(j)), kunci: q.jawab[0] } })
+    const rinci = qs.map(q => { const j = ambil(root, pref, q.no); return { no: q.no, j, ok: q.jawab.some(a => norm(a) === norm(j)), kunci: q.jawab[0], tanya: q.tanya, alasan: q.alasan || '' } })
     return { benar: rinci.filter(r => r.ok).length, total: qs.length, rinci }
   }
   const hasilHTML = (jenis, n) => {
     const b = keBand(n.benar, n.total, jenis)
     return `<div class="tiket ie-tiket" style="--garis:${WARNA}"><div class="tiket-kiri"><span class="label-kecil">Band</span><span class="ie-band">${b.band}</span></div><div class="tiket-isi"><span class="label-kecil">Estimasi ${jenis}</span><h3>${n.benar} dari ${n.total} bener</h3><p class="redup kecil">Setara ${b.skala}/40. Estimasi dari tes mini, bukan skor resmi.</p></div></div>
-      <div class="tabel-geser ie-rinci"><table class="hasil"><thead><tr><th>No</th><th>Jawaban kamu</th><th>Kunci</th><th></th></tr></thead><tbody>${n.rinci.map(r => `<tr class="${r.ok ? 'ok' : 'bad'}"><td>${r.no}</td><td>${esc(r.j || '–')}</td><td>${esc(r.kunci)}</td><td>${ikon(r.ok ? 'cek' : 'x', 16)}</td></tr>`).join('')}</tbody></table></div>`
+      <div class="tabel-geser ie-rinci"><table class="hasil"><thead><tr><th>No</th><th>Jawaban kamu</th><th>Kunci</th><th></th></tr></thead><tbody>${n.rinci.map(r => `<tr class="${r.ok ? 'ok' : 'bad'}"><td>${r.no}</td><td>${esc(r.j || '–')}</td><td>${esc(r.kunci)}</td><td>${ikon(r.ok ? 'cek' : 'x', 16)}</td></tr>`).join('')}</tbody></table></div>
+      <details class="panel ie-bahas" ${n.rinci.some(r => !r.ok) ? 'open' : ''}><summary>${ikon('lampu', 15)} Pembahasan tiap soal</summary><ol>${n.rinci.map(r => `<li class="${r.ok ? 'ok' : 'bad'}"><div class="tb-kepala">${ikon(r.ok ? 'cek' : 'x', 15)}<b>${r.no}.</b> ${esc(r.tanya)}</div><p>Kunci: <b>${esc(r.kunci)}</b>${r.ok ? '' : ` <span class="redup">· jawabanmu: ${esc(r.j || 'kosong')}</span>`}</p>${r.alasan ? `<p class="redup kecil">${r.alasan}</p>` : ''}</li>`).join('')}</ol></details>`
   }
 
   const reading = (el, o) => {
