@@ -976,3 +976,8 @@ table.hasil th, table.hasil td { padding: 7px 11px; border-bottom: 1px solid var
 .ie-bahas li.bad .tb-kepala svg { color: var(--bad) }
 .xl-grid td.meleset .hasil-sel { color: var(--bad) }
 .xl-grid td.beres .hasil-sel { color: var(--ok) }
+.py-setup { margin-bottom: 10px; padding: 9px 13px; border-radius: 12px; border: 1px solid var(--garis-ui); background: var(--panel) }
+.py-setup > summary { cursor: pointer; font-weight: 650; font-size: 14px; display: flex; gap: 8px; align-items: center; color: var(--ink-2) }
+.py-setup .kode-bahas { margin-top: 8px }
+.py-out { margin: 4px 0; padding: 10px 13px; border-radius: 10px; background: var(--panel-2); border: 1px solid var(--garis-ui); font: 13.5px/1.55 var(--f-kode); white-space: pre-wrap; word-break: break-word; overflow-x: auto; color: var(--ink) }
+.editor textarea.kode-py { tab-size: 4; min-height: 150px }

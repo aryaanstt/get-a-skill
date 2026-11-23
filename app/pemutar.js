@@ -43,7 +43,7 @@ window.GAS_PEMUTAR = (() => {
   const PUJIAN = ['Mantap!', 'Bener!', 'Keren!', 'Pas banget!', 'Tepat!', 'Nah gitu!']
   const pujian = () => PUJIAN[Math.floor(Math.random() * PUJIAN.length)]
   const ULANG = ['pilih', 'banyak', 'isian', 'angka', 'urut', 'slider']
-  const DINILAI = ['pilih', 'banyak', 'isian', 'angka', 'urut', 'slider', 'pasang', 'skenario', 'sql', 'excel']
+  const DINILAI = ['pilih', 'banyak', 'isian', 'angka', 'urut', 'slider', 'pasang', 'skenario', 'sql', 'excel', 'py']
   const kata = s => (String(s).trim().match(/\S+/g) || []).length
   let autoFokus = true
   const fokus = fn => { if (autoFokus) setTimeout(fn, 60) }
@@ -673,6 +673,121 @@ window.GAS_PEMUTAR = (() => {
     }
   }
 
+  // ---------- Python beneran pakai Pyodide (diunduh cuma pas soal Python pertama dibuka) ----------
+  const PYODIDE = 'https://cdn.jsdelivr.net/pyodide/v0.26.4/full/'
+  const PY_HELPER = `
+import sys, io, json, traceback
+def __norm(v):
+    try:
+        import pandas as pd
+        if isinstance(v, (pd.DataFrame, pd.Series)):
+            return v.round(4).to_string()
+    except Exception:
+        pass
+    if isinstance(v, float):
+        return repr(round(v, 4))
+    if isinstance(v, (list, tuple)):
+        return repr([round(x, 4) if isinstance(x, float) else x for x in v])
+    if isinstance(v, dict):
+        return repr({k: (round(x, 4) if isinstance(x, float) else x) for k, x in v.items()})
+    return repr(v)
+def __jalan(kode, setup, cek):
+    ns = {}
+    buf = io.StringIO()
+    lama = sys.stdout
+    sys.stdout = buf
+    galat, baris = None, None
+    try:
+        exec(compile(setup, '<data>', 'exec'), ns)
+        exec(compile(kode, '<kode>', 'exec'), ns)
+    except Exception as e:
+        galat = type(e).__name__ + ': ' + str(e)
+        if isinstance(e, SyntaxError) and e.filename == '<kode>':
+            baris = e.lineno
+        for f in traceback.extract_tb(e.__traceback__):
+            if f.filename == '<kode>':
+                baris = f.lineno
+    finally:
+        sys.stdout = lama
+    nilai = {n: (__norm(ns[n]) if n in ns else None) for n in cek}
+    return json.dumps({'out': buf.getvalue(), 'galat': galat, 'baris': baris, 'nilai': nilai})
+`
+  let pyJanji = null
+  const paketPy = new Set()
+  const ambilPy = (paket = []) => {
+    if (!pyJanji) pyJanji = new Promise((ok, gagal) => {
+      if (window.loadPyodide) return ok()
+      const sc = document.createElement('script'); sc.src = PYODIDE + 'pyodide.js'; sc.onload = ok
+      sc.onerror = () => gagal(new Error('Python gagal diunduh. Cek koneksi internet, terus buka ulang soalnya.'))
+      document.head.appendChild(sc)
+    }).then(() => loadPyodide({ indexURL: PYODIDE })).then(py => { py.runPython(PY_HELPER); return py })
+      .catch(e => { pyJanji = null; throw e })
+    return pyJanji.then(async py => { const perlu = paket.filter(p => !paketPy.has(p)); if (perlu.length) { await py.loadPackage(perlu); perlu.forEach(p => paketPy.add(p)) } return py })
+  }
+  const jalanPy = (py, kode, setup, cek) => JSON.parse(py.globals.get('__jalan')(kode, setup || '', py.toPy(cek || [])))
+  const normOut = s => String(s || '').replace(/[ \t]+$/gm, '').trim()
+  const GALAT_PY = [
+    [/^IndentationError/, () => 'Indentasi (spasi di awal baris) belum pas. Isi blok <code>for</code>/<code>if</code>/<code>def</code> menjorok 4 spasi, dan baris di luar blok jangan menjorok.'],
+    [/^SyntaxError/, () => 'Penulisannya belum sesuai aturan Python. Cek titik dua di akhir <code>for</code>/<code>if</code>/<code>def</code>, pasangan kurung, dan tanda kutip.'],
+    [/^NameError: name '([^']+)'/, m => `<code>${esc(m[1])}</code> belum dikenal. Mungkin salah ketik (Python peka huruf besar kecil), variabelnya belum dibikin, atau itu teks yang lupa dikasih kutip.`],
+    [/^TypeError: can only concatenate str/, () => 'Teks ga bisa langsung ditambah angka. Pakai f-string <code>f"... {x}"</code> atau ubah dulu pakai <code>str(x)</code>.'],
+    [/^TypeError: unsupported operand/, () => 'Operasinya ga cocok sama tipe datanya, misalnya teks dikurang angka. Cek tipe tiap variabel.'],
+    [/^KeyError: (.+)/, m => `Kunci/kolom <code>${esc(m[1])}</code> ga ada. Cek ejaan nama kolom atau kunci dictionary, persis sama huruf besar kecilnya.`],
+    [/^IndexError/, () => 'Indeks di luar jangkauan. Indeks mulai dari 0, indeks terakhir = len − 1.'],
+    [/^AttributeError: '(\w+)' object has no attribute '(\w+)'/, m => `Objek ${esc(m[1])} ga punya <code>.${esc(m[2])}</code>. Cek ejaan nama fungsinya.`],
+    [/^ValueError: The truth value of a Series is ambiguous/, () => 'Di pandas, gabung syarat pakai <code>&amp;</code> / <code>|</code> (bukan and/or) dan tiap syarat dibungkus kurung.'],
+    [/^ZeroDivisionError/, () => 'Ada pembagian dengan nol.'],
+  ]
+  const terjemahPy = g => { for (const [re, f] of GALAT_PY) { const m = re.exec(g); if (m) return f(m) } return 'Baca pesan error-nya dari kanan: biasanya nyebut apa yang salah.' }
+
+  R.py = (s, el, api) => {
+    el.innerHTML = `${s.bimbing ? `<span class="label-kecil fase-label bimbing">${ikon('pensil', 14)} Latihan terbimbing</span>` : ''}<p class="pm-tanya">${s.tanya}</p>${s.bimbing && s.petunjuk ? `<p class="tip kecil">${ikon('lampu', 14)} ${s.petunjuk}</p>` : ''}${s.setup ? `<details class="py-setup" ${s.bukaSetup ? 'open' : ''}><summary>${ikon('tabel', 14)} Data yang udah disiapin</summary><pre class="kode-bahas">${esc(s.setup.trim())}</pre></details>` : ''}<div class="editor"><textarea class="kode-sql kode-py" spellcheck="false" autocapitalize="off" autocomplete="off" rows="6" placeholder="# tulis kode Python di sini" aria-label="Kode Python">${esc(s.kerangka || '')}</textarea><div class="editor-bar"><button class="btn kecil jalan">${ikon('main', 14)} Jalankan</button><span class="redup kecil py-status">Ctrl + Enter · Tab = 4 spasi</span></div></div><div class="hasil-q py-hasil"></div>`
+    const ta = el.querySelector('textarea'), hasil = el.querySelector('.py-hasil'), status = el.querySelector('.py-status')
+    let py = null, gagalMuat = null
+    const muat = () => { status.textContent = paketPy.size || window.loadPyodide ? 'Nyiapin Python…' : 'Ngunduh Python (sekali aja, beberapa MB)…'; return ambilPy(s.paket).then(p => { py = p; status.textContent = 'Python siap · Ctrl + Enter · Tab = 4 spasi'; return p }).catch(e => { gagalMuat = e.message; status.textContent = e.message; throw e }) }
+    muat().catch(() => {})
+    const tampilHasil = h => {
+      hasil.innerHTML = (h.out ? `<pre class="py-out">${esc(h.out)}</pre>` : '') + (h.galat ? `<p class="galat">${esc(h.galat)}${h.baris ? ` (baris ${h.baris})` : ''}</p><p class="redup kecil">${terjemahPy(h.galat)}</p>` : '') + (!h.out && !h.galat ? '<p class="redup kecil">Kode jalan tanpa error, tapi ga ada yang di-print.</p>' : '')
+    }
+    const run = async () => { if (!py) { try { await muat() } catch (e) { return null } } const h = jalanPy(py, ta.value, s.setup, s.cek); tampilHasil(h); return h }
+    el.querySelector('.jalan').onclick = run
+    ta.oninput = () => api.siap(ta.value.trim().length > 2)
+    if (s.kerangka) setTimeout(() => api.siap(true))
+    ta.onkeydown = e => {
+      if (e.key === 'Tab' && !e.shiftKey) { e.preventDefault(); const a = ta.selectionStart, b = ta.selectionEnd; ta.value = ta.value.slice(0, a) + '    ' + ta.value.slice(b); ta.selectionStart = ta.selectionEnd = a + 4; ta.dispatchEvent(new Event('input')) }
+      else if (e.key === 'Enter' && (e.ctrlKey || e.metaKey)) { e.preventDefault(); run() }
+      else if (e.key === 'Enter') { // auto-indent: ikutin spasi baris sebelumnya, tambah 4 kalau baris diakhiri titik dua
+        const a = ta.selectionStart, awal = ta.value.lastIndexOf('\n', a - 1) + 1, baris = ta.value.slice(awal, a), sp = (baris.match(/^ */) || [''])[0] + (/:\s*$/.test(baris) ? '    ' : '')
+        if (sp) { e.preventDefault(); ta.value = ta.value.slice(0, a) + '\n' + sp + ta.value.slice(ta.selectionEnd); ta.selectionStart = ta.selectionEnd = a + 1 + sp.length }
+      }
+    }
+    fokus(() => { ta.focus({ preventScroll: true }); if (s.kerangka) { const i = ta.value.indexOf('___'); if (i >= 0) ta.setSelectionRange(i, i + 3) } })
+    const bahasPy = (diag, hK, isiKunci) => bahasHTML({
+      diagnosa: diag,
+      jawab: `<pre class="kode-bahas">${esc(s.kunci.trim())}</pre>${isiKunci ? '<button class="btn kecil garis pakai-kunci">' + ikon('salin', 14) + ' Masukin ke editor (tanpa XP)</button>' : ''}${hK && hK.out ? `<span class="label-kecil">Keluaran yang bener</span><pre class="py-out">${esc(hK.out)}</pre>` : ''}`,
+      kenapa: s.jelas || '', urai: urai(s), umum: s.umum,
+    })
+    return {
+      mode: 'cek', enterBebas: true, ulangDiTempat: true,
+      async cekAsync(nyerah) {
+        if (!py && !gagalMuat) { try { await muat() } catch (e) { /* lanjut ke cabang gagal */ } }
+        if (!py) return nyerah ? { ok: false, pesan: 'Ini jawabannya.', bahas: bahasPy([], null, true) } : { tolak: 'Python belum bisa dimuat di sini. Pencet "Ga tau" buat liat jawaban dan pembahasannya.' }
+        const hK = jalanPy(py, s.kunci, s.setup, s.cek)
+        if (nyerah) return { ok: false, pesan: 'Gapapa. Pelajari pembahasannya, terus ketik ulang sendiri.', bahas: bahasPy([], hK, true) }
+        if (/___/.test(ta.value)) return { tolak: 'Masih ada ___ yang belum diisi' }
+        const h = jalanPy(py, ta.value, s.setup, s.cek); tampilHasil(h)
+        const diag = []
+        if (h.galat) { diag.push(`Error di ${h.baris ? 'baris ' + h.baris : 'kodemu'}: ${kd(h.galat)}`, terjemahPy(h.galat)); return { ok: false, pesan: 'Kodenya error.', bahas: bahasPy(diag, hK, true) } }
+        const cekOut = s.keluaran !== false
+        if (cekOut && normOut(h.out) !== normOut(hK.out)) diag.push(h.out ? `Keluaranmu:<pre class="py-out">${esc(h.out)}</pre>Yang diminta:<pre class="py-out">${esc(hK.out)}</pre>` : 'Kodemu ga nge-print apa-apa. Hasilnya harus ditampilin pakai <code>print(...)</code>.')
+        for (const n of s.cek || []) if (h.nilai[n] !== hK.nilai[n]) diag.push(h.nilai[n] == null ? `Variabel <code>${esc(n)}</code> belum dibikin. Soal minta hasilnya disimpen di <code>${esc(n)}</code>.` : `Isi <code>${esc(n)}</code> punyamu:<pre class="py-out">${esc(h.nilai[n])}</pre>harusnya:<pre class="py-out">${esc(hK.nilai[n])}</pre>`)
+        const ok = !diag.length
+        return ok ? { ok, pesan: pujian() + ' Hasilnya sama persis.', bahas: bahasPy([], hK, false) } : { ok, pesan: 'Kode jalan, tapi hasilnya belum sesuai.', bahas: bahasPy(diag, hK, true) }
+      },
+      isiKunci: () => { ta.value = s.kunci.trim(); run() },
+    }
+  }
+
   // ---------- kerangka pemutar ----------
   const FASE = [['konsep', 'Konsep'], ['contoh', 'Contoh'], ['latihan', 'Latihan'], ['uji', 'Uji'], ['rangkum', 'Rangkum']]
   const faseDari = s => s.t === 'info' || s.t === 'kartu' ? 'konsep' : s.t === 'contoh' ? 'contoh' : s.t === 'rangkum' ? 'rangkum' : s.bimbing ? 'latihan' : 'uji'
@@ -786,6 +901,7 @@ window.GAS_PEMUTAR = (() => {
     U.aksi.onclick = () => {
       if (keadaan === 'jawab') {
         if (r.mode === 'lanjut') { sudahSelesai.add(antre[pos].i); setBar(); if (antre[pos].s.t === 'kartu' || antre[pos].s.t === 'contoh') tambah(2); return maju() }
+        if (r.cekAsync) { U.aksi.disabled = true; const t0 = U.aksi.textContent; U.aksi.textContent = 'Ngecek…'; return r.cekAsync().then(h => { U.aksi.textContent = t0; U.aksi.disabled = false; umpan(h) }) }
         umpan(r.cek())
       } else if (terakhir && (terakhir.ok || !r.ulangDiTempat)) maju()
       else { keluarkanUmpan(); keadaan = 'jawab'; U.aksi.textContent = 'Cek'; U.lewat.hidden = false; U.lewat.textContent = 'Ga tau'; const t = U.isi.querySelector('textarea, .xl-rumus'); if (t) { t.disabled = false; t.focus({ preventScroll: true }) } }
@@ -793,6 +909,7 @@ window.GAS_PEMUTAR = (() => {
     U.lewat.onclick = () => {
       if (keadaan !== 'jawab') return
       if (r.nyerah) return r.nyerah()
+      if (r.cekAsync) return r.cekAsync(true).then(umpan)
       if (r.cek) umpan(r.cek(true))
     }
     const tombol = e => {
@@ -800,7 +917,7 @@ window.GAS_PEMUTAR = (() => {
       const tag = e.target.tagName
       if (e.key === 'Enter' && !U.aksi.disabled && !U.aksi.hidden) {
         if (tag === 'TEXTAREA' && !(e.ctrlKey || e.metaKey)) return
-        if (tag === 'TEXTAREA' && r.enterBebas && keadaan === 'jawab' && antre[pos].s.t === 'sql') return
+        if (tag === 'TEXTAREA' && r.enterBebas && keadaan === 'jawab' && ['sql', 'py'].includes(antre[pos].s.t)) return
         if (tag === 'TEXTAREA' && e.target.closest('.ct-main')) return
         if (tag === 'BUTTON' && e.target !== U.aksi) return
         if (tag === 'SUMMARY') return

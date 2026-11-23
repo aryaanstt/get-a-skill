@@ -21,6 +21,8 @@ window.GAS_DALAM = (() => {
     U: (tanya, item, jelas, o = {}) => ({ t: 'urut', tanya, item, jelas, ...o }),
     PS: (tanya, pasangan, jelas, o = {}) => ({ t: 'pasang', tanya, pasangan, jelas, ...o }),
     SK: (tanya, opsi, o = {}) => ({ t: 'skenario', tanya, opsi: opsi.map(([teks, skor, ket]) => ({ teks, skor, ket })), ...o }),
+    // Python yang dijalanin beneran: kunci dijalanin juga, hasilnya dibandingin (print dan/atau variabel di cek)
+    PYS: (tanya, kunci, o = {}) => ({ t: 'py', tanya, kunci, ...o }),
     W: (tanya, minKata, rubrik, ai, o = {}) => ({ t: 'tulis', tanya, minKata, rubrik, ai, ...o }),
     L: (id, level, judul, menit, langkah) => ({ id, level, judul, menit, langkah }),
     T: (level, tanya, opsi, jelas) => ({ level, tanya, opsi, benar: 0, jelas }),
@@ -28,7 +30,7 @@ window.GAS_DALAM = (() => {
     bimbing: s => ({ ...s, bimbing: true }),
   }
   // Soal pertama setelah contoh jadi latihan terbimbing (ada tombol liat lagi contohnya), kalau belum ada yang ditandai.
-  const NILAI = ['pilih', 'banyak', 'isian', 'angka', 'urut', 'slider', 'pasang', 'sql', 'excel']
+  const NILAI = ['pilih', 'banyak', 'isian', 'angka', 'urut', 'slider', 'pasang', 'sql', 'excel', 'py']
   const tandaiBimbing = p => {
     if (p.langkah.some(s => s.bimbing)) return p
     const c = p.langkah.findIndex(s => s.t === 'contoh'); if (c < 0) return p
@@ -57,6 +59,8 @@ window.GAS_DALAM = (() => {
     if (o.hapus) L = L.filter((_, i) => !o.hapus.includes(i))
     if (o.awal) L = [...o.awal, ...L]
     if (o.sisip) { const i = L.findIndex(s => s.t === 'info' || s.t === 'kartu'); L.splice(i + 1, 0, ...o.sisip) }
+    if (o.setelahContoh) { const i = L.findIndex(s => s.t === 'contoh'); L.splice(i < 0 ? 1 : i + 1, 0, ...o.setelahContoh) }
+    if (o.sebelumRangkum) { const i = L.findIndex(s => s.t === 'rangkum'); L.splice(i < 0 ? L.length : i, 0, ...o.sebelumRangkum) }
     if (o.akhir) L = [...L, ...o.akhir]
     p.langkah = L
     tandaiBimbing(p)

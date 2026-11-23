@@ -11,7 +11,7 @@
   // ---------- kuis harian ----------
   // 5 soal per skill per hari, diambil dari soal tes penempatan + langkah bernilai di semua pelajaran skill itu.
   // Urutan diacak pakai benih tetap per skill, tiap hari ngambil 5 berikutnya, jadi beda dari kemarin.
-  const DINILAI = ['pilih', 'banyak', 'angka', 'pasang', 'urut', 'skenario', 'isian', 'slider', 'sql', 'excel']
+  const DINILAI = ['pilih', 'banyak', 'angka', 'pasang', 'urut', 'skenario', 'isian', 'slider', 'sql', 'excel'] // py sengaja ga masuk kuis harian (berat diunduh)
   const benih = s => { let h = 2166136261; for (const c of s) { h ^= c.charCodeAt(0); h = Math.imul(h, 16777619) } return h >>> 0 }
   const acakBenih = (arr, seed) => { const a = arr.slice(); let x = seed || 1; const r = () => { x = (x + 0x6D2B79F5) | 0; let t = Math.imul(x ^ (x >>> 15), 1 | x); t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t; return ((t ^ (t >>> 14)) >>> 0) / 4294967296 }; for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(r() * (i + 1)); [a[i], a[j]] = [a[j], a[i]] } return a }
   const kolamHarian = id => { const K = G.kursus(id); if (!K) return []; return [...(K.tes || []).map(t => ({ t: 'pilih', tanya: t.tanya, opsi: t.opsi, benar: t.benar, jelas: t.jelas || 'Soal dari bank tes ' + KAT.skill[id].pendek + '.' })), ...(K.harian || []), ...K.pelajaran.flatMap(p => p.langkah.filter(l => DINILAI.includes(l.t) && !l.bimbing))] }
