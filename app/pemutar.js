@@ -511,11 +511,12 @@ window.GAS_PEMUTAR = (() => {
     return { mode: 'lanjut', kunci: true }
   }
 
+  const MAKS_KATA = 1000 // bebas nulis tanpa minimal, cuma dibatesin maksimal (masukan pengguna 24 Nov 2026)
   R.tulis = (s, el, api, ctx) => {
     const lama = (G.D().tulisan || {})[ctx.kunci] || ''
-    el.innerHTML = `<p class="pm-tanya">${s.tanya}</p>${s.contohJawab ? `<details class="contoh-jawab"><summary>${ikon('lampu', 14)} Liat contoh jawaban yang bagus dulu</summary><div>${s.contohJawab}</div></details>` : ''}<textarea class="tulis" rows="7" placeholder="Tulis di sini…">${esc(lama)}</textarea><div class="tulis-info"><span class="hitung-kata">0 / ${s.minKata} kata</span></div><div class="rubrik" hidden><b>Cek sendiri:</b>${s.rubrik.map(r => `<label><input type="checkbox"> ${r}</label>`).join('')}<button class="btn kecil garis salin-ai">${ikon('salin', 16)} Salin buat minta feedback AI</button></div>`
+    el.innerHTML = `<p class="pm-tanya">${s.tanya}</p>${s.contohJawab ? `<details class="contoh-jawab"><summary>${ikon('lampu', 14)} Liat contoh jawaban yang bagus dulu</summary><div>${s.contohJawab}</div></details>` : ''}<textarea class="tulis" rows="7" placeholder="Tulis di sini…">${esc(lama)}</textarea><div class="tulis-info"><span class="hitung-kata">0 / ${MAKS_KATA} kata maks</span></div><div class="rubrik" hidden><b>Cek sendiri:</b>${s.rubrik.map(r => `<label><input type="checkbox"> ${r}</label>`).join('')}<button class="btn kecil garis salin-ai">${ikon('salin', 16)} Salin buat minta feedback AI</button></div>`
     const ta = el.querySelector('textarea'), hk = el.querySelector('.hitung-kata')
-    const upd = () => { const n = kata(ta.value); hk.textContent = `${n} / ${s.minKata} kata`; hk.classList.toggle('cukup', n >= s.minKata); api.siap(n >= s.minKata) }
+    const upd = () => { const n = kata(ta.value), ok = n >= 1 && n <= MAKS_KATA; hk.textContent = n > MAKS_KATA ? `${n} / ${MAKS_KATA} kata, kepanjangan` : `${n} / ${MAKS_KATA} kata maks`; hk.classList.toggle('cukup', ok); api.siap(ok) }
     ta.oninput = upd; upd()
     fokus(() => ta.focus({ preventScroll: true }))
     el.querySelector('.salin-ai').onclick = () => G.salin(`${s.ai}\n\n${ta.value.trim()}`)
