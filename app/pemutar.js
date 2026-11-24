@@ -780,6 +780,8 @@ def __jalan(kode, setup, cek):
         if (h.galat) { diag.push(`Error di ${h.baris ? 'baris ' + h.baris : 'kodemu'}: ${kd(h.galat)}`, terjemahPy(h.galat)); return { ok: false, pesan: 'Kodenya error.', bahas: bahasPy(diag, hK, true) } }
         const cekOut = s.keluaran !== false
         if (cekOut && normOut(h.out) !== normOut(hK.out)) diag.push(h.out ? `Keluaranmu:<pre class="py-out">${esc(h.out)}</pre>Yang diminta:<pre class="py-out">${esc(hK.out)}</pre>` : 'Kodemu ga nge-print apa-apa. Hasilnya harus ditampilin pakai <code>print(...)</code>.')
+        const litU = ta.value.match(/(["'])[^"'\n]*\1/g) || [], litK = s.kunci.match(/(["'])[^"'\n]*\1/g) || []
+        if (normOut(h.out) !== normOut(hK.out) || (s.cek || []).some(n => h.nilai[n] !== hK.nilai[n])) litU.forEach(l => { const k = litK.find(x => x.slice(1, -1).toLowerCase() === l.slice(1, -1).toLowerCase() && x.slice(1, -1) !== l.slice(1, -1)); if (k) diag.push(`Teks di Python peka huruf besar kecil: ${kd(l)} ≠ ${kd(k)}.`) })
         for (const n of s.cek || []) if (h.nilai[n] !== hK.nilai[n]) diag.push(h.nilai[n] == null ? `Variabel <code>${esc(n)}</code> belum dibikin. Soal minta hasilnya disimpen di <code>${esc(n)}</code>.` : `Isi <code>${esc(n)}</code> punyamu:<pre class="py-out">${esc(h.nilai[n])}</pre>harusnya:<pre class="py-out">${esc(hK.nilai[n])}</pre>`)
         const ok = !diag.length
         return ok ? { ok, pesan: pujian() + ' Hasilnya sama persis.', bahas: bahasPy([], hK, false) } : { ok, pesan: 'Kode jalan, tapi hasilnya belum sesuai.', bahas: bahasPy(diag, hK, true) }
@@ -901,7 +903,7 @@ def __jalan(kode, setup, cek):
     U.aksi.onclick = () => {
       if (keadaan === 'jawab') {
         if (r.mode === 'lanjut') { sudahSelesai.add(antre[pos].i); setBar(); if (antre[pos].s.t === 'kartu' || antre[pos].s.t === 'contoh') tambah(2); return maju() }
-        if (r.cekAsync) { U.aksi.disabled = true; const t0 = U.aksi.textContent; U.aksi.textContent = 'Ngecek…'; return r.cekAsync().then(h => { U.aksi.textContent = t0; U.aksi.disabled = false; umpan(h) }) }
+        if (r.cekAsync) { U.aksi.disabled = true; U.lewat.disabled = true; const t0 = U.aksi.textContent; U.aksi.textContent = 'Ngecek…'; return r.cekAsync().then(h => { U.aksi.textContent = t0; U.aksi.disabled = false; U.lewat.disabled = false; umpan(h) }) }
         umpan(r.cek())
       } else if (terakhir && (terakhir.ok || !r.ulangDiTempat)) maju()
       else { keluarkanUmpan(); keadaan = 'jawab'; U.aksi.textContent = 'Cek'; U.lewat.hidden = false; U.lewat.textContent = 'Ga tau'; const t = U.isi.querySelector('textarea, .xl-rumus'); if (t) { t.disabled = false; t.focus({ preventScroll: true }) } }
@@ -909,7 +911,11 @@ def __jalan(kode, setup, cek):
     U.lewat.onclick = () => {
       if (keadaan !== 'jawab') return
       if (r.nyerah) return r.nyerah()
-      if (r.cekAsync) return r.cekAsync(true).then(umpan)
+      if (r.cekAsync) {
+        if (U.lewat.disabled) return
+        U.lewat.disabled = true; U.aksi.disabled = true; const t0 = U.aksi.textContent; U.aksi.textContent = 'Ngecek…'
+        return r.cekAsync(true).then(h => { U.lewat.disabled = false; U.aksi.textContent = t0; U.aksi.disabled = false; umpan(h) })
+      }
       if (r.cek) umpan(r.cek(true))
     }
     const tombol = e => {
